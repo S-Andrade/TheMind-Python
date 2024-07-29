@@ -17,7 +17,7 @@ def getData():
     X = []
     y = []
 
-    os.chdir(".\\data")
+    os.chdir("data\\player0")
     for file in glob.glob("*.tsv"):    
         with open(file, encoding="utf-8") as file:       
             tsv_file = csv.reader(file, delimiter="\t")
@@ -25,7 +25,7 @@ def getData():
                 if len(line) == 1:
                     pose = line[0]
                 else:
-                    X.append(line[-3:])
+                    X.append(line)
                     y.append(pose)
     return np.array(X), np.array(y)
 
@@ -89,8 +89,8 @@ def run(poly, rbf):
         yaw = float(head_pose[4])
         roll = float(head_pose[5])
 
-        poly_pred = poly.predict([[pitch,yaw,roll]])
-        rbf_pred = rbf.predict([[pitch,yaw,roll]])
+        poly_pred = poly.predict([[X, Y, Z, pitch, yaw, roll]])
+        rbf_pred = rbf.predict([[X, Y, Z, pitch, yaw, roll]])
 
         screen.fill(0)
         font = pygame.font.SysFont("calibri",40)
@@ -108,9 +108,9 @@ X, y = getData()
 poly, rbf = trainingAll(X,y)
 joblib.dump(poly, 'poly.pkl')
 joblib.dump(rbf, 'rbf.pkl')
-#os.chdir(".\\data")
-#poly = joblib.load('poly.pkl')
-#rbf = joblib.load('rbf.pkl')
+#os.chdir(".\\data\\player0")
+poly = joblib.load('poly.pkl')
+rbf = joblib.load('rbf.pkl')
 run(poly,rbf)
 
 

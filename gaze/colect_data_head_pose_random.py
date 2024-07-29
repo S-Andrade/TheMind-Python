@@ -22,7 +22,7 @@ def main(filename, player):
 
 
 
-    previous = "free_"
+    previous = "glance_"
     for iteration in range(32):
                 pos = [label for label, value in poses.items() if value < 4 and previous not in label]
                 if pos == [] :
@@ -63,6 +63,7 @@ def main(filename, player):
                 print(pose)
                 data[pose] += data_pose
     
+    playsound("bip.mp3")
     filename = "data\\" + player + "\\"+ filename + ".tsv"
     with open(filename, 'w', encoding='utf8', newline='') as tsv_file:
                 tsv_writer = csv.writer(tsv_file, delimiter='\t', lineterminator='\n')
