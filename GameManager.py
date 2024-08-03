@@ -3,6 +3,7 @@
 import socket
 import multiprocessing
 import random
+import pygame
 
 #GameState: NEXTLEVEL, REFOCUS, GAME, MISTAKE, USESTAR, DEALCARDS
 #playerState: NEXTLEVEL, READYTOPLAY
@@ -24,12 +25,39 @@ def getCards(level):
     
 def gameManager(server_socket,shared_data, shared_data_lock):
     print("START")
+    pygame.init() 
+    
+    res = (720,720) 
+    screen = pygame.display.set_mode(res) 
+    font = pygame.font.SysFont("calibri",80)
+    smallfont = pygame.font.SysFont('Corbel',35) 
     while True:
+        #for event in pygame.event.get():
         with shared_data_lock:
-            #print(shared_data)
+                #print(shared_data)
+            """ if event.type == pygame.QUIT:
+                    run = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if shared_data["gameState"] == "GAMEOVER" and  shared_data["player0State"] == "GAMEOVER" and  shared_data["player1State"] == "GAMEOVER" and  shared_data["player2State"] == "GAMEOVER":
+                         shared_data = {"topPile": 0,"gameState":"WELCOME", "level":1 ,"lives": 3, "player0State": "WELCOME", "player0Cards": [],"player1State": "WELCOME", "player1Cards": [],"player2State": "WELCOME", "player2Cards": [], "clients": []}
+                """
+
+
             if len(shared_data["player0Cards"]) == 0 and len(shared_data["player1Cards"]) == 0 and len(shared_data["player2Cards"]) == 1:
                 print("last")
                 broadcast(shared_data["clients"], "LAST".encode())
+
+                """  if shared_data["gameState"] == "WELCOME":
+                    screen.fill((255,255,255))
+                    for i in range(3):
+                        if shared_data["player"+i+"State"] == "NEXTLEVEL":
+
+                    text = font.render("LEVEL "+ str(shared_data["level"]+1), True, (0, 0, 0))
+                    screen.blit(text, text.get_rect(center = screen.get_rect().center))
+                    lives = font.render("LIVES: "+ str(shared_data["lives"]+1), True, (0, 0, 0))
+                    screen.blit(lives, (10,10))
+                    pygame.display.flip()"""
+            
 
             if shared_data["gameState"] == "WELCOME" and  shared_data["player0State"] == "NEXTLEVEL" and  shared_data["player1State"] == "NEXTLEVEL" and  shared_data["player2State"] == "NEXTLEVEL":
                 shared_data["gameState"] = "NEXTLEVEL"
@@ -75,12 +103,20 @@ def gameManager(server_socket,shared_data, shared_data_lock):
                     print(cards)
                     broadcast(shared_data["clients"], tosend.encode())
 
+            if shared_data["gameState"] == "REFOCUS" and  (len(shared_data["player0Cards"]) == 0 or shared_data["player0State"] == "REFOCUS") and  (len(shared_data["player1Cards"]) == 0 or shared_data["player1State"] == "REFOCUS") and  (len(shared_data["player2Cards"]) == 0 or shared_data["player2State"] == "REFOCUS"):
+                shared_data["gameState"] = "GAME"
+                shared_data["player0State"] = "GAME"
+                shared_data["player1State"] = "GAME"
+                shared_data["player2State"] = "GAME"
+                broadcast(shared_data["clients"], "GAME".encode())
+
             if shared_data["gameState"] == "GAMEOVER" and  shared_data["player0State"] == "GAMEOVER" and  shared_data["player1State"] == "GAMEOVER" and  shared_data["player2State"] == "GAMEOVER":
                 print("gameOver aqui em cima")
                 input("Play again?")
                 shared_data = {"topPile": 0,"gameState":"WELCOME", "level":1 ,"lives": 3, "player0State": "WELCOME", "player0Cards": [],"player1State": "WELCOME", "player1Cards": [],"player2State": "WELCOME", "player2Cards": [], "clients": []}
                 
-
+        
+                
 
 def on_new_client(conn, addr, id, shared_data, shared_data_lock):
     print(f'Connected to Player {id}')
@@ -129,17 +165,23 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
                 
                 elif shared_data["player"+id+"State"] == "GAME" and shared_data["gameState"] == "GAME" and msg == "MISTAKE": 
                     shared_data["player"+id+"State"] = "MISTAKE"
+                
+                elif shared_data["player"+id+"State"] == "GAME" and shared_data["gameState"] == "GAME" and msg == "ASK_REFOCUS": 
+                    shared_data["gameState"] = "REFOCUS"
+                    broadcast(shared_data["clients"], "REFOCUS".encode())
+
+                elif shared_data["player"+id+"State"] == "GAME" and shared_data["gameState"] == "REFOCUS" and msg == "REFOCUS": 
+                    shared_data["player"+id+"State"] = "REFOCUS"
 
             print(shared_data["player0Cards"])
             print(shared_data["player1Cards"])
             print(shared_data["player2Cards"])
-
-
-
-                              
+                        
 def main():
-    HOST = '127.0.0.1'
+    HOST = '192.168.1.72'
     PORT = 50001
+
+
     with multiprocessing.Manager() as manager:
         shared_data = manager.dict({"topPile": 0,"gameState":"WELCOME", "level":1 ,"lives": 3, "player0State": "WELCOME", "player0Cards": [],"player1State": "WELCOME", "player1Cards": [],"player2State": "WELCOME", "player2Cards": [], "clients": []})
         shared_data_lock = manager.Lock()
@@ -153,7 +195,7 @@ def main():
             process = multiprocessing.Process(target=gameManager, args=(server_socket,shared_data, shared_data_lock))
             process.start()
 
-           
+   
             while True:
                 conn, addr = server_socket.accept()
                 first = conn.recv(1024)
@@ -162,7 +204,6 @@ def main():
                 process = multiprocessing.Process(target=on_new_client, args=(conn, addr, id, shared_data, shared_data_lock))
                 process.start()
                 conn.close()
-                    
                
 
 if __name__ == '__main__':
