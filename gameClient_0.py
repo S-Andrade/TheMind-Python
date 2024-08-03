@@ -50,7 +50,7 @@ def main():
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
     s.connect(('192.168.1.72', 50001))
-    msgid = "Player " + str(sys.argv[1])
+    msgid = "Player 0"
     s.send(msgid.encode())
 
     manager = multiprocessing.Manager()
