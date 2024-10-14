@@ -5,6 +5,10 @@ import sys
 import pygame 
 
 
+def robot():
+    #connect with gaze
+    pass
+
 # Function to be executed in the parallel process
 def worker(shared_dict, shared_data_lock, s, id):
     while True:
@@ -56,7 +60,6 @@ def worker(shared_dict, shared_data_lock, s, id):
                 shared_dict = {"cards": [], "state": "WELCOME", "level" : 0, "lastplay": 0, "mistake": 0, "starttime": 0, "timetoplay": 0}
 
             
-
 def main():
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
@@ -70,16 +73,19 @@ def main():
 
     worker_process = multiprocessing.Process(target=worker, args=(shared_dict, shared_data_lock, s, 2, ))
     worker_process.start()
+
+    worker_process = multiprocessing.Process(target=robot, args=(shared_dict, shared_data_lock, s, 2, ))
+    worker_process.start()
     
     while True:
 
         if shared_dict["state"] == "WELCOME":
-            print("welcome")
+            #print("welcome")
             s.send("WELCOME".encode())
             shared_dict["state"] = "WAITING_WELCOME"
             
         elif shared_dict["state"] == "NEXTLEVEL":
-            print("readyplay")
+            #print("readyplay")
             s.send("READYTOPLAY".encode())
             shared_dict["state"] = "WAITING_NEXTLEVEL"
 
@@ -87,7 +93,7 @@ def main():
 
             if time.time() - shared_dict["starttime"] >= shared_dict['timetoplay']:
                 tosend = "PLAY " +  str(shared_dict["cards"][0])
-                print(tosend)
+                #print(tosend)
                 s.send(tosend.encode())
                 shared_dict["lastplay"] = shared_dict["cards"][0]
                 shared_dict["cards"] = shared_dict["cards"][1:]
@@ -97,7 +103,7 @@ def main():
                     print(shared_dict['timetoplay'])
         
         if shared_dict["state"] == "MISTAKE":
-            print("mistake")
+            #print("mistake")
             s.send("MISTAKE".encode())
             shared_dict["state"] = "WAITING_MISTAKE"
 
