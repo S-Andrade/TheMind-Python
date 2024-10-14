@@ -10,7 +10,7 @@ def worker(shared_dict, shared_data_lock, s, id):
     while True:
         msg = s.recv(1024)
         msg = msg.decode()
-        #print(">"+msg)
+        print(">"+msg)
         with shared_data_lock:
             if "NEXTLEVEL" in msg:
                 list_cards = eval(msg[9:])
@@ -18,13 +18,22 @@ def worker(shared_dict, shared_data_lock, s, id):
                 shared_dict["level"] = len(list_cards[id])
                 shared_dict['state'] = "NEXTLEVEL"
             
-            if "GAME" in msg:
+            elif "GAMEOVER" in msg:
+                shared_dict['state'] = "GAMEOVER"
+                shared_dict["cards"] = []
+                shared_dict["level"] = 0
+                shared_dict["lastplay"] = 0
+                shared_dict["mistake"] = 0
+
+                print(shared_dict['state'])
+
+            elif "GAME" in msg:
                 shared_dict['state'] = "GAME"
             
-            if "WELCOME" in msg:
+            elif "WELCOME" in msg:
                 shared_dict['state'] = "WELCOME"
 
-            if len(shared_dict["cards"]) > 0:
+            elif len(shared_dict["cards"]) > 0:
                 if "MISTAKE" in msg:
                     shared_dict['state'] = "MISTAKE"
                     shared_dict['mistake'] = int(msg[7:])
@@ -32,12 +41,6 @@ def worker(shared_dict, shared_data_lock, s, id):
                 
                 if "REFOCUS" in msg:
                     shared_dict['state'] = "REFOCUS"
-
-            if "GAMEOVER" in msg:
-                shared_dict['state'] = "GAMEOVER"
-                shared_dict = {"cards": [], "state": "WELCOME", "level" : 0, "lastplay": 0, "mistake": 0}
-
-
 def main():
     # initializing the constructor 
     pygame.init() 

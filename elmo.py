@@ -39,4 +39,4 @@ time.sleep(5)"""
 robot.set_pan(0)
 robot.set_tilt(0)
 
-//TODO 
+#TODO  FAZ ROBO
