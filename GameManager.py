@@ -25,12 +25,12 @@ def getCards(level):
     
 def gameManager(server_socket,shared_data, shared_data_lock):
     print("START")
-    pygame.init() 
+    """pygame.init() 
     
     res = (720,720) 
     screen = pygame.display.set_mode(res) 
     font = pygame.font.SysFont("calibri",80)
-    smallfont = pygame.font.SysFont('Corbel',35) 
+    smallfont = pygame.font.SysFont('Corbel',35) """
     while True:
         #for event in pygame.event.get():
         with shared_data_lock:
@@ -115,9 +115,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
                 input("Play again?")
                 shared_data = {"topPile": 0,"gameState":"WELCOME", "level":1 ,"lives": 3, "player0State": "WELCOME", "player0Cards": [],"player1State": "WELCOME", "player1Cards": [],"player2State": "WELCOME", "player2Cards": [], "clients": []}
                 
-        
-                
-
+    
 def on_new_client(conn, addr, id, shared_data, shared_data_lock):
     print(f'Connected to Player {id}')
     with shared_data_lock: 
@@ -178,7 +176,7 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
             print(shared_data["player2Cards"])
                         
 def main():
-    HOST = '192.168.1.72'
+    HOST = '192.168.1.170'
     PORT = 50001
 
 
