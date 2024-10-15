@@ -56,7 +56,7 @@ def main():
     smallfont = pygame.font.SysFont('Corbel',35) 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.170', 50001))
+    s.connect(('127.0.0.1', 50001))
     msgid = "Player 0"
     s.send(msgid.encode())
 
@@ -73,7 +73,6 @@ def main():
     run = True
     while run:
         for event in pygame.event.get():
-            print(event)
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -107,24 +106,19 @@ def main():
 
         mouse = pygame.mouse.get_pos() 
 
-        #print(shared_dict["state"])
+        print(shared_dict["state"])
         if shared_dict["state"] == "WELCOME":
             screen.fill((231,84,128))  
             text = font.render("LEVEL "+ str(shared_dict["level"]+1), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
                 
-            pygame.display.update()
-            pygame.event.pump()
-
-
+            pygame.display.flip()
         if shared_dict["state"] == "WAITING_WELCOME":
             screen.fill((255,182,193)) 
             text = font.render("LEVEL "+ str(shared_dict["level"]+1), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
                 
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
         
         elif shared_dict["state"] == "NEXTLEVEL":
             screen.fill((15,170,240)) 
@@ -132,9 +126,7 @@ def main():
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             cards_text = font.render(str(shared_dict["cards"]), True, (0, 0, 0))
             screen.blit(cards_text, (screen.get_rect().centerx - 100,screen.get_rect().centery - 200))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
         
         elif shared_dict["state"] == "WAITING_NEXTLEVEL":
             screen.fill((151,214,242)) 
@@ -142,9 +134,7 @@ def main():
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             cards_text = font.render(str(shared_dict["cards"]), True, (0, 0, 0))
             screen.blit(cards_text, (screen.get_rect().centerx - 100,screen.get_rect().centery - 200))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
 
         elif shared_dict["state"]  == "GAME" and len(shared_dict["cards"]) > 0:
             screen.fill((255,255,255)) 
@@ -159,60 +149,45 @@ def main():
                 
             text = smallfont.render('refocus' , True , (0,0,0) )
             screen.blit(text , (width/5+10,height/5+30))  
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
 
         elif shared_dict["state"]  == "GAME" and len(shared_dict["cards"]) == 0:
             screen.fill((200,200,200)) 
             cards_text = font.render(str(shared_dict["cards"]), True, (0, 0, 0))
             screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
         
         elif shared_dict["state"]  == "MISTAKE":
             screen.fill((223,28,28)) 
             cards_text = font.render(str(shared_dict["cards"]), True, (0, 0, 0))
             screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
         
         elif shared_dict["state"]  == "WAITING_MISTAKE":
             screen.fill((242,110,110)) 
             cards_text = font.render(str(shared_dict["cards"]), True, (0, 0, 0))
             screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
 
         elif shared_dict["state"]  == "REFOCUS":
             screen.fill((51,160,44)) 
             cards_text = font.render(str(shared_dict["cards"]), True, (0, 0, 0))
             screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
 
         elif shared_dict["state"]  == "WAITING_REFOCUS":
             screen.fill((178,223,138)) 
             cards_text = font.render(str(shared_dict["cards"]), True, (0, 0, 0))
             screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
 
 
         if shared_dict["state"] == "GAMEOVER":
             screen.fill((255,140,0)) 
             text = font.render("GAME OVER", True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            pygame.display.update()
-            pygame.event.pump()
-
+            pygame.display.flip()
 
 if __name__ == "__main__":
     multiprocessing.set_start_method('spawn')
     main()
-        
