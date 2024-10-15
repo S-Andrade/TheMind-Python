@@ -38,3 +38,5 @@ time.sleep(5)"""
 #look at mainscreen
 robot.set_pan(0)
 robot.set_tilt(0)
+
+#TODO  FAZ ROBO
