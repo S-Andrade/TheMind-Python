@@ -198,7 +198,7 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
                     if (len(shared_data["player0Cards"]) == 0 or card_played <= shared_data["player0Cards"][0]) and (len(shared_data["player1Cards"]) == 0 or card_played <= shared_data["player1Cards"][0]) and (len(shared_data["player2Cards"]) == 0 or card_played <= shared_data["player2Cards"][0]):
                         shared_data["topPile"] = card_played
                         shared_data["player"+id+"Cards"] = shared_data["player"+id+"Cards"][1:]
-                        sendit = "CARD " + str(card_played) 
+                        sendit = f"CARD {id},{str(card_played)}"
                         broadcast(shared_data["clients"], sendit.encode())
                     else:
                         shared_data["lives"] -= 1

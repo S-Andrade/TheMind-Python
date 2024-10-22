@@ -19,6 +19,16 @@ def worker(shared_dict, shared_data_lock, s, id):
                 shared_dict['state'] = "NEXTLEVEL"
                 shared_dict['timetoplay'] = shared_dict["cards"][0]
                 print(shared_dict['timetoplay'])
+
+            if "GAMEOVER" in msg:
+                shared_dict["cards"] = []
+                shared_dict["state"] = "WELCOME"
+                shared_dict["level"] = 0
+                shared_dict["lastplay"] = 0
+                shared_dict["mistake"] = 0
+                shared_dict["starttime"] = 0
+                shared_dict["timetoplay"] = 0
+            
             
             if "GAME" in msg:
                 shared_dict['state'] = "GAME"
@@ -28,7 +38,9 @@ def worker(shared_dict, shared_data_lock, s, id):
                 shared_dict['state'] = "WELCOME"
 
             if "CARD" in msg:
-                card = int(msg[4:])
+                msgclean = msg[4:].split(",")
+                player = msgclean[0]
+                card = int(msgclean[1])
                 if len(shared_dict["cards"]) > 0:
                         shared_dict['timetoplay'] = shared_dict["cards"][0] - card
                         print(shared_dict['timetoplay'])
@@ -50,17 +62,16 @@ def worker(shared_dict, shared_data_lock, s, id):
                         if len(shared_dict["cards"]) > 0:
                             shared_dict['timetoplay'] = shared_dict["cards"][0] - shared_dict['mistake']
                             print(shared_dict['timetoplay'])
-                   
-            if "GAMEOVER" in msg:
-                shared_dict['state'] = "GAMEOVER"
-                shared_dict = {"cards": [], "state": "WELCOME", "level" : 0, "lastplay": 0, "mistake": 0, "starttime": 0, "timetoplay": 0}
 
+                if "REFOCUS" in msg:
+                    shared_dict['state'] = "REFOCUS"
+                   
             
 
 def main():
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.170', 50001))
+    s.connect(('127.0.0.1', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -96,10 +107,14 @@ def main():
                     shared_dict["starttime"] = time.time()
                     print(shared_dict['timetoplay'])
         
-        if shared_dict["state"] == "MISTAKE":
+        elif shared_dict["state"] == "MISTAKE":
             print("mistake")
             s.send("MISTAKE".encode())
             shared_dict["state"] = "WAITING_MISTAKE"
+        
+        elif shared_dict["state"] == "REFOCUS":
+            s.send("REFOCUS".encode())
+            shared_dict["state"] = "WAITING_REFOCUS"
 
 if __name__ == "__main__":
     multiprocessing.set_start_method('spawn')

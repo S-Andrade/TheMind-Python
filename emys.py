@@ -1,15 +1,24 @@
-
 import xmlrpc.client
+import time
+import numpy as np
+import ctypes
 
 
-port = 2002
+class TimeoutTransport(xmlrpc.client.Transport):
+    timeout = 500.0
+    def set_timeout(self, timeout):
+        self.timeout = timeout
 
-proxy = xmlrpc.client.ServerProxy(f"http://localhost:{port}/")
+# Assuming thalamusAddress and clientPort are defined somewhere else in your code
+thalamusAddress = "localhost"  # Example address
+clientPort = 2002         # Example 
+t = TimeoutTransport()
+t.set_timeout(1000)
 
+eventPublisher = xmlrpc.client.ServerProxy('http://{0}:{1}'.format(thalamusAddress, clientPort), transport=t, verbose=False)
 
-try:
-    proxy.ISpeakActions.Speak("player0", "Olá do python")
-except xmlrpc.client.Fault as err:
-    print("A fault occurred")
-    print("Fault code: %d" % err.faultCode)
-    print("Fault string: %s" % err.faultString)
+s = eventPublisher.Connect("SERA","python", 2011, 2010, 1)
+print(s)
+e = eventPublisher.PongSync("python", 1)
+print(e)
+eventPublisher.Disconnect("python")

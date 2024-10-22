@@ -3,8 +3,8 @@ import time
 import socket
 import sys
 import pygame 
-from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE,SIG_DFL) 
+#from signal import signal, SIGPIPE, SIG_DFL
+#signal(SIGPIPE,SIG_DFL) 
 
 
 # Function to be executed in the parallel process
