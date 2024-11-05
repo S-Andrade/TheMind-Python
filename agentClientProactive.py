@@ -16,7 +16,7 @@ def robot(shared_dict, shared_data_lock):
 
     players = ["player0", "player1"]
 
-    targets = ["player0", "player1", "mainscreen", "tablet"]
+    targets = ["player0", "player1", "tablet"]
 
     currentGazeTargetFront = ""
     currentGazeTargetCondition = ""
@@ -24,6 +24,8 @@ def robot(shared_dict, shared_data_lock):
     gazeTime = 0
     timeGaze = time.time()
     endGaze = False
+    player0 = 0
+    player1 = 0
 
     while True:
         #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))
@@ -38,7 +40,7 @@ def robot(shared_dict, shared_data_lock):
         if shared_dict["speak"] != "":
             message = f'Speak,player2,{shared_dict["speak"]}'
             client_socket.sendall(message.encode('utf-8'))
-            print(message)
+            #print(message)
             with shared_data_lock:
                 shared_dict["speak"] = ""
             time.sleep(0.5)
@@ -47,10 +49,15 @@ def robot(shared_dict, shared_data_lock):
             message = f'GazeAtTarget,{shared_dict["playcard"]}'
             client_socket.sendall(message.encode('utf-8'))
             time.sleep(1)
-            print(">>>>>>" + shared_dict["playcard"])
+            #print(">>>>>>" + shared_dict["playcard"])
+            if shared_dict["playcard"] == "player0":
+                player0 += 1
+            
+            if shared_dict["playcard"] == "player1":
+                player1 += 1
+
             with shared_data_lock:
                 shared_dict["playcard"] = ""
-
 
 
         if shared_dict["gazetarget"] == "front":
@@ -59,7 +66,7 @@ def robot(shared_dict, shared_data_lock):
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = float(random.randrange(100,200)/100)
+                nextTimeToLook = float(random.randrange(300,500)/100)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -69,26 +76,52 @@ def robot(shared_dict, shared_data_lock):
                 if time.time() - timeGaze >= nextTimeToLook:
                     if currentGazeTargetFront == "player0":
                         currentGazeTargetFront = "player1"
+                        player1 += 1
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
-                    nextTimeToLook = float(random.randrange(100,200)/100)
+                        player0 += 1
+                    nextTimeToLook = float(random.randrange(300,500)/100)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
                     #print(message)
 
+
+        if shared_dict["gazetarget"] == "tablet":
+            message = f'GazeAtTarget,tablet'
+            client_socket.sendall(message.encode('utf-8'))
            
 
         if shared_dict["gazetarget"] == "condition":
-            
-            if  shared_dict["targetPlayer"] == "":
-                if len(shared_dict["cards0"]) == 0:
-                    shared_dict["targetPlayer"] = "player1"
-                if len(shared_dict["cards1"]) == 0:
-                    shared_dict["targetPlayer"] = "player0"
-                else:
-                    shared_dict["targetPlayer"] = random.choice(players)
 
+            if  shared_dict["targetPlayer"] == "":
+            
+                if len(shared_dict["cards0"]) == 0 and len(shared_dict["cards1"]) > 0:
+                    with shared_data_lock:
+                        shared_dict["targetPlayer"] = "player1"
+                        player1 += 1
+                elif len(shared_dict["cards1"]) == 0 and len(shared_dict["cards0"]) > 0:
+                    with shared_data_lock:
+                        shared_dict["targetPlayer"] = "player0"
+                        player0 += 1
+                elif player0 > player1:
+                    with shared_data_lock:
+                        shared_dict["targetPlayer"] = "player1"
+                        player1 += 1
+                elif player1 > player0:
+                    with shared_data_lock:
+                        shared_dict["targetPlayer"] = "player0"
+                        player0 += 1
+                else:
+                    with shared_data_lock:
+                        shared_dict["targetPlayer"] = random.choice(players)
+
+                        if shared_dict["targetPlayer"] == "player0":
+                            player0 += 1
+                        
+                        if shared_dict["targetPlayer"] == "player1":
+                            player1 += 1
+                
                 nextTimeToLook = float(random.randrange(300,500)/100)
                 gazeTime = float(random.randrange(50,300)/100)
                 timeGaze = time.time()
@@ -100,13 +133,9 @@ def robot(shared_dict, shared_data_lock):
             
             if  shared_dict["targetPlayer"] != "":
 
-                if time.time() - timeGaze >= nextTimeToLook:
-                    nextTimeToLook = float(random.randrange(300,500)/100)
-                    gazeTime = float(random.randrange(50,300)/100)
-                    timeGaze = time.time()
-                    endGaze = False
-                    message = f'GazeAtTarget,{shared_dict["targetPlayer"]}'
-                    client_socket.sendall(message.encode('utf-8'))
+                if time.time() - timeGaze >= nextTimeToLook + gazeTime:
+                    with shared_data_lock:
+                        shared_dict["targetPlayer"] = ""
                     #print(message)
                 
                 elif time.time() - timeGaze >= gazeTime and not endGaze:
@@ -121,7 +150,7 @@ def gaze(conn, addr, id, shared_dict, shared_data_lock):
         while True:
             msg = conn.recv(1024)
             with shared_data_lock:
-                shared_dict[id] = msg
+                shared_dict[id] = msg.decode()
 
 # Function to be executed in the parallel process
 def worker(shared_dict, shared_data_lock, s, id):
@@ -185,16 +214,18 @@ def worker(shared_dict, shared_data_lock, s, id):
             if len(shared_dict["cards"]) > 0:
                     with shared_data_lock:
                         shared_dict['timetoplay'] = shared_dict["cards"][0] - card
-                        shared_dict["targetPlayer"] = ""
                         if player != "2":
                             shared_dict["cards"+player] =  [ i for i in shared_dict["cards"+player] if i!= card ] 
                             shared_dict["playcard"] = "player" + player
-                        print(shared_dict['timetoplay'])
+                            if shared_dict['timetoplay'] == 1:
+                                shared_dict["speak"] = "Agora sou eu!"
+                                shared_dict["gazetarget"] = "front"
+                        #print(shared_dict['timetoplay'])
         
         elif "LAST" in msg:
                 with shared_data_lock:
                     shared_dict['timetoplay'] = 0
-                    print(shared_dict['timetoplay'])
+                    #print(shared_dict['timetoplay'])
         
         elif len(shared_dict["cards"]) == 0:
             if "MISTAKE" in msg:
@@ -217,12 +248,12 @@ def worker(shared_dict, shared_data_lock, s, id):
                 if "LAST" in msg:
                     with shared_data_lock:
                         shared_dict['timetoplay'] = 0
-                        print(shared_dict['timetoplay'])
+                        #print(shared_dict['timetoplay'])
                 else:
                     if len(shared_dict["cards"]) > 0:
                         with shared_data_lock:
                             shared_dict['timetoplay'] = shared_dict["cards"][0] - shared_dict['mistake']
-                            print(shared_dict['timetoplay'])
+                            #print(shared_dict['timetoplay'])
 
             if "REFOCUS" in msg:
                 with shared_data_lock:
@@ -267,20 +298,21 @@ def main():
 
     
     while True:
-        #print(shared_dict["state"])
+        print(str(shared_dict["cards0"]) + " " + str(shared_dict["cards1"]) + " " + str(shared_dict["cards"]))
         if shared_dict["state"] == "WELCOME":
             #print("welcome")
             #     
             if not hi:
                 shared_dict["speak"] = "Olá! Eu sou o émis! E serei o vosso terceiro membro da equipa!"
                 hi = True
+
                 shared_dict["gazetarget"] = "front"
 
             s.send("WELCOME".encode())
             shared_dict["state"] = "WAITING_WELCOME"
         
         elif shared_dict["state"] == "WAITING_WELCOME":
-            shared_dict["gazetarget"] = "front"
+            shared_dict["gazetarget"] = "condition"
             
         elif shared_dict["state"] == "NEXTLEVEL":
             #print("readyplay")
@@ -296,8 +328,7 @@ def main():
             shared_dict["state"] = "WAITING_NEXTLEVEL"
 
         elif shared_dict["state"] == "WAITING_NEXTLEVEL":
-            shared_dict["gazetarget"] = "front"
-            shared_dict["targetPlayer"] = ""
+            shared_dict["gazetarget"] = "condition"
 
         elif shared_dict["state"]  == "GAME" and len(shared_dict["cards"]) > 0:
             
@@ -312,8 +343,14 @@ def main():
                 if len(shared_dict["cards"]) > 0:
                     shared_dict['timetoplay'] = shared_dict["cards"][0] - shared_dict["lastplay"]
                     shared_dict["starttime"] = time.time()
-                    print(shared_dict['timetoplay'])
-        
+                    #print(shared_dict['timetoplay'])
+
+            elif time.time() - shared_dict["starttime"] >= shared_dict['timetoplay']-1:
+                shared_dict["gazetarget"] = "tablet"
+
+            else:
+                shared_dict["gazetarget"] = "condition"
+
         elif shared_dict["state"] == "MISTAKE":
             #print("mistake")
             falas = ["oh não!", "Perdemos uma vida!"]
@@ -324,8 +361,7 @@ def main():
             shared_dict["state"] = "WAITING_MISTAKE"
         
         elif shared_dict["state"] == "WAITING_MISTAKE":
-            shared_dict["gazetarget"] = "front"
-            shared_dict["targetPlayer"] = ""
+            shared_dict["gazetarget"] = "condition"
         
         elif shared_dict["state"] == "REFOCUS":
             shared_dict["gazetarget"] = "condition"
@@ -334,8 +370,7 @@ def main():
             shared_dict["state"] = "WAITING_REFOCUS"
         
         elif shared_dict["state"] == "WAITING_REFOCUS":
-            shared_dict["gazetarget"] = "front"
-            shared_dict["targetPlayer"] = ""
+            shared_dict["gazetarget"] = "condition"
 
 if __name__ == "__main__":
     multiprocessing.set_start_method('spawn')

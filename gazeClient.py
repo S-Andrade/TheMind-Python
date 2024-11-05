@@ -7,7 +7,7 @@ import random
 sGaze = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
 sGaze.connect(('127.0.0.1', 50009))
    
-gazes = ["player0", "player1", "mainscreen", "tablet"]
+gazes = ["Player", "Center", "Tablet"]
 
 def gaze():
     i = 0
@@ -16,7 +16,7 @@ def gaze():
     while True:
         print(tar)
         #print(time.time() - starttime)
-        if time.time() - starttime > 20:
+        if time.time() - starttime > 5:
             tar = random.choice(gazes)
             print(tar)
             starttime = time.time()

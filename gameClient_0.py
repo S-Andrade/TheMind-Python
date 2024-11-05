@@ -27,7 +27,7 @@ def worker(shared_dict, shared_data_lock, s, id):
                 shared_dict["lastplay"] = 0
                 shared_dict["mistake"] = 0
 
-                print(shared_dict['state'])
+                #print(shared_dict['state'])
 
             elif "GAME" in msg:
                 shared_dict['state'] = "GAME"
@@ -106,7 +106,7 @@ def main():
 
         mouse = pygame.mouse.get_pos() 
 
-        print(shared_dict["state"])
+        #print(shared_dict["state"])
         if shared_dict["state"] == "WELCOME":
             screen.fill((231,84,128))  
             text = font.render("LEVEL "+ str(shared_dict["level"]+1), True, (0, 0, 0))

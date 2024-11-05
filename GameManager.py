@@ -4,9 +4,36 @@ import socket
 import multiprocessing
 import random
 import pygame
+import time
+import logging
+import os
+import sys
 
 #GameState: NEXTLEVEL, REFOCUS, GAME, MISTAKE, USESTAR, DEALCARDS
 #playerState: NEXTLEVEL, READYTOPLAY
+
+# Define a function to set up logging for each process
+def setup_logger(process_name):
+    # Create a logger
+    logger = logging.getLogger(process_name)
+    logger.setLevel(logging.DEBUG)
+
+    # Prevent duplicate handlers if logger already exists
+    if not logger.handlers:
+        # Create a file handler for each process based on process name
+        log_file = f"{process_name}.log"
+        file_handler = logging.FileHandler(log_file, mode='w')
+        file_handler.setLevel(logging.DEBUG)
+
+        # Create a formatter and add it to the handler
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
+
+        # Add the handler to the logger
+        logger.addHandler(file_handler)
+    
+    return logger
+
 
 class Player:
     def __init__(self, id):
@@ -26,12 +53,16 @@ def getCards(level):
     
 def gameManager(server_socket,shared_data, shared_data_lock):
     print("START")
+
+    logger = setup_logger(f"logs\\{sys.argv[1]}\\gameManager")
+ 
     pygame.init() 
     
     res = (720,720) 
     screen = pygame.display.set_mode(res) 
     font = pygame.font.SysFont("calibri",80)
     smallfont = pygame.font.SysFont('Corbel',35)
+    sfont = pygame.font.SysFont("calibri",40)
 
     run = True
     while True:
@@ -55,6 +86,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
 
                         tosend = "WELCOME"
                         broadcast(shared_data["clients"], tosend.encode())
+                        
                         print("hello")
 
         with shared_data_lock:
@@ -92,12 +124,14 @@ def gameManager(server_socket,shared_data, shared_data_lock):
                 shared_data["level"] += 1
 
                 if shared_data["level"] == 11:
+                    
                     shared_data["gameState"] == "GAMEOVER"
                     shared_data["player0State"] = "GAMEOVER"
                     shared_data["player1State"] = "GAMEOVER"
                     shared_data["player2State"] = "GAMEOVER"
                     broadcast(shared_data["clients"], "GAMEOVER".encode())
                 else:
+                    
                     shared_data["gameState"] = "WELCOME"
                     shared_data["topPile"] = 0
                     shared_data["player0State"] = "WELCOME"
@@ -124,12 +158,19 @@ def gameManager(server_socket,shared_data, shared_data_lock):
 
         if shared_data["gameState"] == "WELCOME":
             #print("aiaia")
+            time.sleep(2)
             screen.fill((231,84,128))
 
             text = font.render("LEVEL "+ str(shared_data["level"]), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             lives = font.render("LIVES: "+ str(shared_data["lives"]), True, (0, 0, 0))
             screen.blit(lives, (10,10))
+            p0 = sfont.render("Player0: "+ str(len(shared_data["player0Cards"])), True, (0, 0, 0))
+            screen.blit(p0, (10,600))
+            p1 = sfont.render("Player1: "+ str(len(shared_data["player1Cards"])), True, (0, 0, 0))
+            screen.blit(p1, (10,640))
+            r = sfont.render("Player2: "+ str(len(shared_data["player2Cards"])), True, (0, 0, 0))
+            screen.blit(r, (10, 680))
             pygame.display.flip()
         
         elif shared_data["gameState"] == "NEXTLEVEL":
@@ -140,6 +181,12 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             lives = font.render("LIVES: "+ str(shared_data["lives"]), True, (0, 0, 0))
             screen.blit(lives, (10,10))
+            p0 = sfont.render("Player0: "+ str(len(shared_data["player0Cards"])), True, (0, 0, 0))
+            screen.blit(p0, (10,600))
+            p1 = sfont.render("Player1: "+ str(len(shared_data["player1Cards"])), True, (0, 0, 0))
+            screen.blit(p1, (10,640))
+            r = sfont.render("Player2: "+ str(len(shared_data["player2Cards"])), True, (0, 0, 0))
+            screen.blit(r, (10, 680))
             pygame.display.flip()
         
         elif shared_data["gameState"] == "GAME":
@@ -154,6 +201,12 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             screen.blit(lives, (10,10))
             level = font.render("LEVEL: "+ str(shared_data["level"]), True, (0, 0, 0))
             screen.blit(level, (10,80))
+            p0 = sfont.render("Player0: "+ str(len(shared_data["player0Cards"])), True, (0, 0, 0))
+            screen.blit(p0, (10,600))
+            p1 = sfont.render("Player1: "+ str(len(shared_data["player1Cards"])), True, (0, 0, 0))
+            screen.blit(p1, (10,640))
+            r = sfont.render("Player2: "+ str(len(shared_data["player2Cards"])), True, (0, 0, 0))
+            screen.blit(r, (10, 680))
             pygame.display.flip()
         
         elif shared_data["gameState"] == "REFOCUS":
@@ -164,14 +217,20 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             screen.blit(lives, (10,10))
             level = font.render("LEVEL: "+ str(shared_data["level"]), True, (0, 0, 0))
             screen.blit(level, (10,80))
+            p0 = sfont.render("Player0: "+ str(len(shared_data["player0Cards"])), True, (0, 0, 0))
+            screen.blit(p0, (10,600))
+            p1 = sfont.render("Player1: "+ str(len(shared_data["player1Cards"])), True, (0, 0, 0))
+            screen.blit(p1, (10,640))
+            r = sfont.render("Player2: "+ str(len(shared_data["player2Cards"])), True, (0, 0, 0))
+            screen.blit(r, (10, 680))
             pygame.display.flip()
 
         if shared_data["gameState"] == "GAMEOVER":
+            time.sleep(2)
             screen.fill((255,140,0)) 
             text = font.render("PLAY AGAIN?", True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             pygame.display.flip()
-
 
 def on_new_client(conn, addr, id, shared_data, shared_data_lock):
     print(f'Connected to Player {id}')
@@ -206,6 +265,7 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
                         if shared_data["lives"] == 0:
                             #game over
                             #print("gameover")
+                            
                             shared_data["gameState"] = "GAMEOVER"
                             shared_data["player0State"] = "GAMEOVER"
                             shared_data["player1State"] = "GAMEOVER"
@@ -260,7 +320,6 @@ def main():
                 process.start()
                 conn.close()
                
-
 if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
     main()
