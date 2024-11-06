@@ -33,7 +33,7 @@ def robot(shared_dict, shared_data_lock):
         if shared_dict["animation"] != "":
             message = f'PlayAnimation,player2,{shared_dict["animation"]}'
             client_socket.sendall(message.encode('utf-8'))
-            print(message)
+            #print(message)
             with shared_data_lock:
                 shared_dict["animation"] = ""
         

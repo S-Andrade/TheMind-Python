@@ -48,7 +48,9 @@ def robot(shared_dict, shared_data_lock):
         if shared_dict["playcard"] != "":
             message = f'GazeAtTarget,{shared_dict["playcard"]}'
             client_socket.sendall(message.encode('utf-8'))
+            print(">" + shared_dict["playcard"])
             time.sleep(1)
+            print(">>" + shared_dict["playcard"])
             #print(">>>>>>" + shared_dict["playcard"])
             if shared_dict["playcard"] == "player0":
                 player0 += 1
@@ -217,6 +219,7 @@ def worker(shared_dict, shared_data_lock, s, id):
                         if player != "2":
                             shared_dict["cards"+player] =  [ i for i in shared_dict["cards"+player] if i!= card ] 
                             shared_dict["playcard"] = "player" + player
+                            print("player" + player)
                             if shared_dict['timetoplay'] == 1:
                                 shared_dict["speak"] = "Agora sou eu!"
                                 shared_dict["gazetarget"] = "front"
@@ -298,7 +301,7 @@ def main():
 
     
     while True:
-        print(str(shared_dict["cards0"]) + " " + str(shared_dict["cards1"]) + " " + str(shared_dict["cards"]))
+        #print(str(shared_dict["cards0"]) + " " + str(shared_dict["cards1"]) + " " + str(shared_dict["cards"]))
         if shared_dict["state"] == "WELCOME":
             #print("welcome")
             #     

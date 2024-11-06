@@ -54,7 +54,7 @@ def getCards(level):
 def gameManager(server_socket,shared_data, shared_data_lock):
     print("START")
 
-    logger = setup_logger(f"logs\\{sys.argv[1]}\\gameManager")
+    #logger = setup_logger(f"logs\\{sys.argv[1]}\\gameManager")
  
     pygame.init() 
     
