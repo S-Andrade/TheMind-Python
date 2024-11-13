@@ -3,9 +3,14 @@ import time
 import socket
 import sys
 import pygame 
+import logging
+import os
+
 #from signal import signal, SIGPIPE, SIG_DFL
 #signal(SIGPIPE,SIG_DFL) 
+file_path = os.path.join('/storage/emulated/0/', 'pydroid_logs.log')
 
+logging.basicConfig(filename= file_path, level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Function to be executed in the parallel process
 def worker(shared_dict, shared_data_lock, s, id):
@@ -13,6 +18,7 @@ def worker(shared_dict, shared_data_lock, s, id):
         msg = s.recv(1024)
         msg = msg.decode()
         print(">"+msg)
+        logging.debug('>'+msg)
         with shared_data_lock:
             if "NEXTLEVEL" in msg:
                 list_cards = eval(msg[9:])
@@ -56,7 +62,7 @@ def main():
     smallfont = pygame.font.SysFont('Corbel',35) 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('127.0.0.1', 50001))
+    s.connect(('192.168.1.169', 50001))
     msgid = "Player 0"
     s.send(msgid.encode())
 
