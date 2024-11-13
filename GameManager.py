@@ -122,7 +122,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
 
             if shared_data["gameState"] == "GAME" and  len(shared_data["player0Cards"]) == 0 and len(shared_data["player1Cards"]) == 0 and len(shared_data["player2Cards"]) == 0:
                 shared_data["level"] += 1
-
+                time.sleep(1)
                 if shared_data["level"] == 11:
                     
                     shared_data["gameState"] == "GAMEOVER"
