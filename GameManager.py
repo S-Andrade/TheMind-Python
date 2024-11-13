@@ -293,7 +293,7 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
             #print(shared_data["player2Cards"])
                         
 def main():
-    HOST = '127.0.0.1'
+    HOST = '192.168.1.169'
     PORT = 50001
 
 
