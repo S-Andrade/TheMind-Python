@@ -8,6 +8,9 @@ import time
 import logging
 import os
 import sys
+file_path = os.path.join('/storage/emulated/0/Documents/Python', 'pydroid_logs.log')
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 #GameState: NEXTLEVEL, REFOCUS, GAME, MISTAKE, USESTAR, DEALCARDS
 #playerState: NEXTLEVEL, READYTOPLAY
@@ -52,7 +55,7 @@ def getCards(level):
     return sorted(lists_cards[0]), sorted(lists_cards[1]), sorted(lists_cards[2])
     
 def gameManager(server_socket,shared_data, shared_data_lock):
-    print("START")
+    logging.debug("START")
 
     #logger = setup_logger(f"logs\\{sys.argv[1]}\\gameManager")
  
@@ -233,7 +236,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             pygame.display.flip()
 
 def on_new_client(conn, addr, id, shared_data, shared_data_lock):
-    print(f'Connected to Player {id}')
+    logging.debug(f'Connected to Player {id}')
     with shared_data_lock: 
         clients = shared_data["clients"]
         clients.append(conn)
@@ -293,8 +296,8 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
             #print(shared_data["player2Cards"])
                         
 def main():
-    HOST = '192.168.1.169'
-    PORT = 50001
+    host = '192.168.1.169'
+    port = 50001
 
 
     with multiprocessing.Manager() as manager:
@@ -303,21 +306,24 @@ def main():
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_socket.bind((HOST, PORT))
+            server_socket.bind((host, port))
             server_socket.listen()
-            print(f'Server listening on {HOST}:{PORT}')
+            logging.debug(f'Server listening on {host}:{port}')
 
             process = multiprocessing.Process(target=gameManager, args=(server_socket,shared_data, shared_data_lock))
+            logging.debug(f'process')
             process.start()
+            logging.debug(f'start')
 
    
             while True:
                 conn, addr = server_socket.accept()
                 first = conn.recv(1024)
                 first = first.decode()
-                id = ''.join(x for x in first if x.isdigit())
-                process = multiprocessing.Process(target=on_new_client, args=(conn, addr, id, shared_data, shared_data_lock))
+                player_id = ''.join(x for x in first if x.isdigit())
+                process = multiprocessing.Process(target=on_new_client, args=(conn, addr, player_id, shared_data, shared_data_lock))
                 process.start()
+                logging.debug(f'start {player_id}')
                 conn.close()
                
 if __name__ == '__main__':
