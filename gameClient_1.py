@@ -97,8 +97,9 @@ def main():
                 elif shared_dict["state"] == "REFOCUS":
                     s.send("REFOCUS".encode())
                     shared_dict["state"] = "WAITING_REFOCUS"
-
-
+            
+                elif shared_dict["state"] == "GAMEOVER":
+                    shared_dict["state"] = "WELCOME"
 
         mouse = pygame.mouse.get_pos() 
 
