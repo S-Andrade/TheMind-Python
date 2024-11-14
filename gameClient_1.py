@@ -41,6 +41,8 @@ def worker(shared_dict, shared_data_lock, s, id):
                 
                 if "REFOCUS" in msg:
                     shared_dict['state'] = "REFOCUS"
+
+
 def main():
     # initializing the constructor 
     pygame.init() 
@@ -52,7 +54,7 @@ def main():
     smallfont = pygame.font.SysFont('Corbel',35) 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.160', 50001))
+    s.connect(('192.168.1.169', 50001))
     msgid = "Player 1"
     s.send(msgid.encode())
 
@@ -97,9 +99,11 @@ def main():
                 elif shared_dict["state"] == "REFOCUS":
                     s.send("REFOCUS".encode())
                     shared_dict["state"] = "WAITING_REFOCUS"
-            
+
                 elif shared_dict["state"] == "GAMEOVER":
-                    shared_dict["state"] = "WELCOME"
+                    s.send("GAMEOVER".encode())
+                    shared_dict["state"] = "WAITING_GAMEOVER"
+
 
         mouse = pygame.mouse.get_pos() 
 
@@ -184,8 +188,13 @@ def main():
             text = font.render("GAME OVER", True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             pygame.display.flip()
+        
+        if shared_dict["state"] == "WAITING_GAMEOVER":
+            screen.fill((255, 194, 75)) 
+            text = font.render("GAME OVER", True, (0, 0, 0))
+            screen.blit(text, text.get_rect(center = screen.get_rect().center))
+            pygame.display.flip()
 
 if __name__ == "__main__":
     multiprocessing.set_start_method('spawn')
     main()
-        

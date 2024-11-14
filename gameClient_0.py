@@ -62,7 +62,7 @@ def main():
     smallfont = pygame.font.SysFont('Corbel',35) 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.160', 50001))
+    s.connect(('192.168.1.169', 50001))
     msgid = "Player 0"
     s.send(msgid.encode())
 
@@ -108,6 +108,9 @@ def main():
                     s.send("REFOCUS".encode())
                     shared_dict["state"] = "WAITING_REFOCUS"
 
+                elif shared_dict["state"] == "GAMEOVER":
+                    s.send("GAMEOVER".encode())
+                    shared_dict["state"] = "WAITING_GAMEOVER"
 
 
         mouse = pygame.mouse.get_pos() 
@@ -190,6 +193,12 @@ def main():
 
         if shared_dict["state"] == "GAMEOVER":
             screen.fill((255,140,0)) 
+            text = font.render("GAME OVER", True, (0, 0, 0))
+            screen.blit(text, text.get_rect(center = screen.get_rect().center))
+            pygame.display.flip()
+        
+        if shared_dict["state"] == "WAITING_GAMEOVER":
+            screen.fill((255, 194, 75)) 
             text = font.render("GAME OVER", True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             pygame.display.flip()

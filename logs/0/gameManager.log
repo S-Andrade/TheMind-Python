@@ -1,0 +1,11 @@
+2024-11-14 01:09:47,884 - gameManager - INFO - START
+2024-11-14 01:09:58,068 - gameManager - INFO - NEXTLEVEL
+2024-11-14 01:09:58,076 - gameManager - INFO - broadcast -- NEXTLEVEL
+2024-11-14 01:10:00,300 - gameManager - INFO - GAME
+2024-11-14 01:10:00,306 - gameManager - INFO - broadcast -- GAME
+2024-11-14 01:10:05,816 - gameManager - INFO - end MISTAKE
+2024-11-14 01:10:05,824 - gameManager - INFO - broadcast -- GAME
+2024-11-14 01:10:05,829 - gameManager - INFO - level: 2
+2024-11-14 01:10:05,832 - gameManager - INFO - WELCOME
+2024-11-14 01:10:05,833 - gameManager - INFO - cards: [[6], [29], [3]]
+2024-11-14 01:10:05,840 - gameManager - INFO - broadcast -- WELCOME [[6], [29], [3]]

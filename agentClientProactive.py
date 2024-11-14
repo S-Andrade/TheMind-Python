@@ -374,6 +374,10 @@ def main():
         
         elif shared_dict["state"] == "WAITING_REFOCUS":
             shared_dict["gazetarget"] = "condition"
+        
+        elif shared_dict["state"] == "GAMEOVER":
+            s.send("GAMEOVER".encode())
+            shared_dict["state"] = "WAITING_GAMEOVER"
 
 if __name__ == "__main__":
     multiprocessing.set_start_method('spawn')
