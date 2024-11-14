@@ -1,0 +1,54 @@
+2024-11-14 06:13:40,701 - 1 - INFO - Connected to Player 1
+2024-11-14 06:13:40,705 - 1 - INFO - add client
+2024-11-14 06:13:43,829 - 1 - INFO - 1 -- message -- WELCOME
+2024-11-14 06:13:43,830 - 1 - INFO - 1 -- NEXTLEVEL
+2024-11-14 06:13:44,940 - 1 - INFO - 1 -- message -- READYTOPLAY
+2024-11-14 06:13:44,941 - 1 - INFO - 1 -- GAME
+2024-11-14 06:13:49,881 - 1 - INFO - 1 -- message -- PLAY 58
+2024-11-14 06:13:49,881 - 1 - INFO - 1 -- PLAY -- 58
+2024-11-14 06:13:49,885 - 1 - INFO - 1 -- broadcast -- CARD 1,58
+2024-11-14 06:13:55,743 - 1 - INFO - 1 -- message -- WELCOME
+2024-11-14 06:13:55,743 - 1 - INFO - 1 -- NEXTLEVEL
+2024-11-14 06:14:02,663 - 1 - INFO - 1 -- message -- READYTOPLAY
+2024-11-14 06:14:02,664 - 1 - INFO - 1 -- GAME
+2024-11-14 06:14:06,474 - 1 - INFO - 1 -- message -- PLAY 78
+2024-11-14 06:14:06,475 - 1 - INFO - 1 -- PLAY -- 78
+2024-11-14 06:14:06,476 - 1 - INFO - 1 -- shared_data["lives"]
+2024-11-14 06:14:06,477 - 1 - INFO - 1 -- MISTAKE
+2024-11-14 06:14:06,480 - 1 - INFO - 1 -- broadcast -- MISTAKE 78
+2024-11-14 06:14:07,354 - 1 - INFO - 1 -- message -- MISTAKE
+2024-11-14 06:14:12,911 - 1 - INFO - 1 -- message -- PLAY 85
+2024-11-14 06:14:12,912 - 1 - INFO - 1 -- PLAY -- 85
+2024-11-14 06:14:12,916 - 1 - INFO - 1 -- broadcast -- CARD 1,85
+2024-11-14 06:14:25,332 - 1 - INFO - 1 -- message -- WELCOME
+2024-11-14 06:14:25,333 - 1 - INFO - 1 -- NEXTLEVEL
+2024-11-14 06:14:28,752 - 1 - INFO - 1 -- message -- READYTOPLAY
+2024-11-14 06:14:28,753 - 1 - INFO - 1 -- GAME
+2024-11-14 06:14:58,281 - 1 - INFO - 1 -- message -- PLAY 72
+2024-11-14 06:14:58,282 - 1 - INFO - 1 -- PLAY -- 72
+2024-11-14 06:14:58,285 - 1 - INFO - 1 -- broadcast -- CARD 1,72
+2024-11-14 06:15:15,585 - 1 - INFO - 1 -- message -- PLAY 89
+2024-11-14 06:15:15,586 - 1 - INFO - 1 -- PLAY -- 89
+2024-11-14 06:15:15,589 - 1 - INFO - 1 -- broadcast -- CARD 1,89
+2024-11-14 06:15:17,551 - 1 - INFO - 1 -- message -- PLAY 98
+2024-11-14 06:15:17,552 - 1 - INFO - 1 -- PLAY -- 98
+2024-11-14 06:15:17,555 - 1 - INFO - 1 -- broadcast -- CARD 1,98
+2024-11-14 06:15:21,080 - 1 - INFO - 1 -- message -- WELCOME
+2024-11-14 06:15:21,081 - 1 - INFO - 1 -- NEXTLEVEL
+2024-11-14 06:15:22,780 - 1 - INFO - 1 -- message -- READYTOPLAY
+2024-11-14 06:15:22,782 - 1 - INFO - 1 -- GAME
+2024-11-14 06:15:27,042 - 1 - INFO - 1 -- message -- PLAY 11
+2024-11-14 06:15:27,042 - 1 - INFO - 1 -- PLAY -- 11
+2024-11-14 06:15:27,044 - 1 - INFO - 1 -- shared_data["lives"]
+2024-11-14 06:15:27,046 - 1 - INFO - 1 -- MISTAKE
+2024-11-14 06:15:27,050 - 1 - INFO - 1 -- broadcast -- MISTAKE 11
+2024-11-14 06:15:28,724 - 1 - INFO - 1 -- message -- MISTAKE
+2024-11-14 06:15:37,265 - 1 - INFO - 1 -- message -- PLAY 13
+2024-11-14 06:15:37,266 - 1 - INFO - 1 -- PLAY -- 13
+2024-11-14 06:15:37,269 - 1 - INFO - 1 -- broadcast -- CARD 1,13
+2024-11-14 06:15:43,136 - 1 - INFO - 1 -- message -- PLAY 52
+2024-11-14 06:15:43,138 - 1 - INFO - 1 -- PLAY -- 52
+2024-11-14 06:15:43,143 - 1 - INFO - 1 -- broadcast -- CARD 1,52
+2024-11-14 06:15:58,700 - 1 - INFO - 1 -- message -- PLAY 76
+2024-11-14 06:15:58,700 - 1 - INFO - 1 -- PLAY -- 76
+2024-11-14 06:15:58,703 - 1 - INFO - 1 -- broadcast -- CARD 1,76

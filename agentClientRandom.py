@@ -139,16 +139,9 @@ def worker(shared_dict, shared_data_lock, s, id):
             time.sleep(1)
             with shared_data_lock:
                 shared_dict["speak"] = "Mais um jogo?"
-            
+                shared_dict["state"] = "GAMEOVER"
 
-            with shared_data_lock:
-                shared_dict["cards"] = []
-                shared_dict["state"] = "WELCOME"
-                shared_dict["level"] = 0
-                shared_dict["lastplay"] = 0
-                shared_dict["mistake"] = 0
-                shared_dict["starttime"] = 0
-                shared_dict["timetoplay"] = 0
+            
         
         elif "GAME" in msg:
             with shared_data_lock:
@@ -167,6 +160,7 @@ def worker(shared_dict, shared_data_lock, s, id):
             if len(shared_dict["cards"]) > 0:
                     with shared_data_lock:
                         shared_dict['timetoplay'] = shared_dict["cards"][0] - card
+                        shared_dict["starttime"] = time.time()
                         print(shared_dict['timetoplay'])
                         if player != "2" and shared_dict['timetoplay'] == 1:
                             shared_dict["speak"] = "Agora sou eu!"
@@ -174,7 +168,8 @@ def worker(shared_dict, shared_data_lock, s, id):
         
         elif "LAST" in msg:
                 with shared_data_lock:
-                    shared_dict['timetoplay'] = 0
+                    shared_dict['timetoplay'] = 2
+                    shared_dict["starttime"] = time.time()
                     print(shared_dict['timetoplay'])
         
         elif len(shared_dict["cards"]) == 0:
@@ -191,12 +186,14 @@ def worker(shared_dict, shared_data_lock, s, id):
 
                 if "LAST" in msg:
                     with shared_data_lock:
-                        shared_dict['timetoplay'] = 0
+                        shared_dict['timetoplay'] = 2
+                        shared_dict["starttime"] = time.time()
                         print(shared_dict['timetoplay'])
                 else:
                     if len(shared_dict["cards"]) > 0:
                         with shared_data_lock:
                             shared_dict['timetoplay'] = shared_dict["cards"][0] - shared_dict['mistake']
+                            shared_dict["starttime"] = time.time()
                             print(shared_dict['timetoplay'])
 
             if "REFOCUS" in msg:
@@ -277,8 +274,9 @@ def main():
         elif shared_dict["state"]  == "GAME" and len(shared_dict["cards"]) > 0:
             
             shared_dict["gazetarget"] = "condition"
-            
+            print(">>>>" + str(time.time() - shared_dict["starttime"]))
             if time.time() - shared_dict["starttime"] >= shared_dict['timetoplay']:
+                print("****"+str(time.time() - shared_dict["starttime"]))
                 tosend = "PLAY " +  str(shared_dict["cards"][0])
                 #print(tosend)
                 s.send(tosend.encode())
@@ -313,6 +311,12 @@ def main():
         elif shared_dict["state"] == "GAMEOVER":
             s.send("GAMEOVER".encode())
             shared_dict["state"] = "WAITING_GAMEOVER"
+            shared_dict["cards"] = []
+            shared_dict["level"] = 0
+            shared_dict["lastplay"] = 0
+            shared_dict["mistake"] = 0
+            shared_dict["starttime"] = 0
+            shared_dict["timetoplay"] = 0
 
 if __name__ == "__main__":
     multiprocessing.set_start_method('spawn')

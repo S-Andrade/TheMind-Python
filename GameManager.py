@@ -50,16 +50,202 @@ def broadcast(clients, message):
         for client in clients : 
             client.send(message)
 
-def getCards(level):
-    cards = random.sample(range(1, 100), 3*level)
-    lists_cards = [ cards[i:i+level] for i in range(0, len(cards), level) ]
-    return sorted(lists_cards[0]), sorted(lists_cards[1]), sorted(lists_cards[2])
-    
+def getCards(Level):
+    cards = []
+
+    if Level == 1:
+        cards.append(random.randint(1, 20))
+        cards.append(random.randint(50, 60))
+        cards.append(random.randint(90, 100))
+        #random.shuffle(cards)
+
+    elif Level == 2:
+        while len(cards) < 5:
+            next_card = random.randint(50, 100)
+            if next_card not in cards:
+                cards.append(next_card)
+
+        b = True
+        while b:
+            c = cards[random.randint(0, 3)] + 2
+            if c not in cards and c < 100:
+                cards.append(c)
+                b = False
+
+    elif Level == 3:
+        while len(cards) < 7:
+            next_card = random.randint(1, 100)
+            if next_card not in cards:
+                cards.append(next_card)
+        b = True
+        while b:
+            c = cards[random.randint(2, 6)] + 3
+            if c not in cards and c < 100:
+                cards.insert(4, c)
+                b = False
+        b = True
+        while b:
+            c = cards[random.randint(2, 7)] + 1
+            if c not in cards  and c < 100:
+                cards.insert(0, c)
+                b = False
+
+    elif Level == 4:
+        cards.append(1)
+        e = f = g = 0
+        while len(cards) < 11:
+            if e < 3:
+                next_card = random.randint(1, 20)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    e += 1
+            if f < 3:
+                next_card = random.randint(50, 70)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    f += 1
+            if g < 4:
+                next_card = random.randint(75, 100)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    g += 1
+        b = True
+        while b:
+            c = cards[random.randint(4, 6)] + 2
+            if c not in cards and c < 100:
+                cards.insert(7, c)
+                b = False
+
+    elif Level == 5:
+        f = g = 0
+        while len(cards) < 13:
+            if f < 7:
+                next_card = random.randint(1, 20)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    f += 1
+            if g < 7:
+                next_card = random.randint(70, 100)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    g += 1
+        b = True
+        while b:
+            c = cards[random.randint(0, 3)] + 2
+            if c not in cards and c < 100:
+                cards.insert(4, c)
+                b = False
+        b = True
+        while b:
+            c = cards[random.randint(0, 9)] + 5
+            if c not in cards and c < 100:
+                cards.append(c)
+                b = False
+
+    elif Level == 6:
+        f = g = 0
+        while len(cards) < 18:
+            if f < 9:
+                next_card = random.randint(1, 20)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    f += 1
+            if g < 9:
+                next_card = random.randint(70, 100)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    g += 1
+
+    elif Level == 7:
+        f = g = 0
+        while len(cards) < 19:
+            if f < 3:
+                next_card = random.randint(1, 10)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    f += 1
+            if g < 16:
+                next_card = random.randint(40, 100)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    g += 1
+        b = True
+        while b:
+            c = cards[random.randint(0, 5)] + 2
+            if c not in cards and c < 100:
+                cards.insert(6, c)
+                b = False
+        b = True
+        while b:
+            c = cards[random.randint(7, 13)] + 1
+            if c not in cards and c < 100:
+                cards.append(c)
+                b = False
+
+    elif Level == 8:
+        e = f = g = 0
+        while len(cards) < 24:
+            if e < 8:
+                next_card = random.randint(1, 20)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    e += 1
+            if f < 8:
+                next_card = random.randint(25, 40)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    f += 1
+            if g < 8:
+                next_card = random.randint(50, 100)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    g += 1
+
+    elif Level == 9:
+        f = g = 0
+        while len(cards) < 25:
+            if f < 9:
+                next_card = random.randint(1, 25)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    f += 1
+            if g < 16:
+                next_card = random.randint(50, 100)
+                if next_card not in cards:
+                    cards.append(next_card)
+                    g += 1
+        b = True
+        while b:
+            c = cards[random.randint(9, 16)] + 3
+            if c not in cards and c < 100:
+                cards.insert(17, c)
+                b = False
+        b = True
+        while b:
+            c = cards[random.randint(0, 8)] + 1
+            if c not in cards and c < 100:
+                cards.append(c)
+                b = False
+
+    elif Level == 10:
+        while len(cards) < 30:
+            next_card = random.randint(1, 100)
+            if next_card not in cards:
+                cards.append(next_card)
+
+    # Distribute cards to each player
+    hands = []
+    for i in range(3):
+        hand = cards[i*Level : (i + 1)*Level]
+        hands.append(sorted(hand))
+
+    return hands
+
 def gameManager(server_socket,shared_data, shared_data_lock):
     logger = setup_logger("gameManager")
     logger.info("START")
 
- 
+    last = False
     pygame.init() 
     # Get the screen width and height
     """screen_info = pygame.display.Info()
@@ -158,7 +344,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             #if len(shared_data["player0Cards"]) == 0 and len(shared_data["player1Cards"]) == 0 and len(shared_data["player2Cards"]) == 0:
             #    time.sleep(1)
 
-            print(shared_data["topPile"])
+            #print(shared_data["topPile"])
 
         elif shared_data["gameState"] == "REFOCUS":
             screen.fill((51,160,44)) 
@@ -185,14 +371,17 @@ def gameManager(server_socket,shared_data, shared_data_lock):
 
         if len(shared_data["player0Cards"]) == 0 and len(shared_data["player1Cards"]) == 0 and len(shared_data["player2Cards"]) == 1:
             #print("last")
-            logger.info("only player2 as cards")
-            broadcast(shared_data["clients"], "LAST".encode())
-            logger.info("broadcast -- LAST")
+            if not last:
+                logger.info("only player2 as cards")
+                broadcast(shared_data["clients"], "LAST".encode())
+                logger.info("broadcast -- LAST")
+                last = True
         
         elif shared_data["gameState"] == "WELCOME" and  shared_data["player0State"] == "NEXTLEVEL" and  shared_data["player1State"] == "NEXTLEVEL" and  shared_data["player2State"] == "NEXTLEVEL":
             with shared_data_lock: 
                 shared_data["gameState"] = "NEXTLEVEL"
                 logger.info("NEXTLEVEL")
+                last = False
                 cards_p0, cards_p1, cards_p2 = getCards(shared_data["level"])
                 shared_data["player0Cards"] = cards_p0
                 shared_data["player1Cards"] = cards_p1
@@ -201,7 +390,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             tosend = "NEXTLEVEL " + str(cards)
             #print(cards)
             broadcast(shared_data["clients"], tosend.encode())
-            logger.info("broadcast -- NEXTLEVEL")
+            logger.info(f"broadcast -- {tosend}")
 
         elif shared_data["gameState"] == "NEXTLEVEL" and  shared_data["player0State"] == "GAME" and  shared_data["player1State"] == "GAME" and  shared_data["player2State"] == "GAME":
             with shared_data_lock: 
@@ -218,7 +407,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             #print("lock game")
             time.sleep(2)
             #print("lock game+1")
-            if shared_data["level"] == 2:
+            if shared_data["level"] == 5:
                 with shared_data_lock: 
                     shared_data["gameState"] = "GAMEOVER"
                     #shared_data["player0State"] = "GAMEOVER"
@@ -269,8 +458,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             broadcast(shared_data["clients"], "GAME".encode())
             logger.info("broadcast -- GAME")
         
-        print(">"+shared_data["gameState"])
-
+        #print(">"+shared_data["gameState"])
 
 def on_new_client(conn, addr, id, shared_data, shared_data_lock):
     logger = setup_logger(id)
@@ -286,7 +474,7 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
             msg = conn.recv(1024)
             msg = msg.decode()
             logger.info(f"{id} -- message -- {msg}")
-            #print(msg)
+            print(str(id) + " " + msg)
             
                 
             if shared_data["player"+id+"State"] == "WELCOME" and shared_data["gameState"] == "WELCOME" and msg == "WELCOME": 
@@ -317,6 +505,7 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
                 else:
                     with shared_data_lock: 
                         shared_data["lives"] -= 1
+                        logger.info(f'{id} -- {shared_data["lives"]}')
                     
                     if shared_data["lives"] == 0:
                         #game over

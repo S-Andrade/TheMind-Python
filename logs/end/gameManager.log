@@ -1,0 +1,42 @@
+2024-11-14 06:13:21,264 - gameManager - INFO - START
+2024-11-14 06:13:43,830 - gameManager - INFO - NEXTLEVEL
+2024-11-14 06:13:43,832 - gameManager - INFO - broadcast -- NEXTLEVEL [[7], [58], [99]]
+2024-11-14 06:13:45,356 - gameManager - INFO - GAME
+2024-11-14 06:13:45,358 - gameManager - INFO - broadcast -- GAME
+2024-11-14 06:13:49,886 - gameManager - INFO - only player2 as cards
+2024-11-14 06:13:49,888 - gameManager - INFO - broadcast -- LAST
+2024-11-14 06:13:51,895 - gameManager - INFO - level: 2
+2024-11-14 06:13:53,897 - gameManager - INFO - WELCOME
+2024-11-14 06:13:53,898 - gameManager - INFO - cards: [[7], [58], [99]]
+2024-11-14 06:13:53,899 - gameManager - INFO - broadcast -- WELCOME [[7], [58], [99]]
+2024-11-14 06:13:55,745 - gameManager - INFO - NEXTLEVEL
+2024-11-14 06:13:55,747 - gameManager - INFO - broadcast -- NEXTLEVEL [[55, 92], [78, 85], [86, 94]]
+2024-11-14 06:14:02,716 - gameManager - INFO - GAME
+2024-11-14 06:14:02,718 - gameManager - INFO - broadcast -- GAME
+2024-11-14 06:14:07,908 - gameManager - INFO - end MISTAKE
+2024-11-14 06:14:07,910 - gameManager - INFO - broadcast -- GAME
+2024-11-14 06:14:16,628 - gameManager - INFO - only player2 as cards
+2024-11-14 06:14:16,631 - gameManager - INFO - broadcast -- LAST
+2024-11-14 06:14:18,637 - gameManager - INFO - level: 3
+2024-11-14 06:14:20,638 - gameManager - INFO - WELCOME
+2024-11-14 06:14:20,638 - gameManager - INFO - cards: [[55, 92], [78, 85], [86, 94]]
+2024-11-14 06:14:20,640 - gameManager - INFO - broadcast -- WELCOME [[55, 92], [78, 85], [86, 94]]
+2024-11-14 06:14:25,857 - gameManager - INFO - NEXTLEVEL
+2024-11-14 06:14:25,860 - gameManager - INFO - broadcast -- NEXTLEVEL [[28, 38, 87], [72, 89, 98], [59, 73, 86]]
+2024-11-14 06:14:28,756 - gameManager - INFO - GAME
+2024-11-14 06:14:28,758 - gameManager - INFO - broadcast -- GAME
+2024-11-14 06:15:17,554 - gameManager - INFO - level: 4
+2024-11-14 06:15:19,555 - gameManager - INFO - WELCOME
+2024-11-14 06:15:19,556 - gameManager - INFO - cards: [[28, 38, 87], [72, 89, 98], [59, 73, 86]]
+2024-11-14 06:15:19,557 - gameManager - INFO - broadcast -- WELCOME [[28, 38, 87], [72, 89, 98], [59, 73, 86]]
+2024-11-14 06:15:21,688 - gameManager - INFO - NEXTLEVEL
+2024-11-14 06:15:21,691 - gameManager - INFO - broadcast -- NEXTLEVEL [[1, 20, 59, 82], [11, 13, 52, 76], [9, 70, 77, 100]]
+2024-11-14 06:15:23,369 - gameManager - INFO - GAME
+2024-11-14 06:15:23,371 - gameManager - INFO - broadcast -- GAME
+2024-11-14 06:15:29,354 - gameManager - INFO - end MISTAKE
+2024-11-14 06:15:29,356 - gameManager - INFO - broadcast -- GAME
+2024-11-14 06:16:08,431 - gameManager - INFO - only player2 as cards
+2024-11-14 06:16:08,433 - gameManager - INFO - broadcast -- LAST
+2024-11-14 06:16:10,437 - gameManager - INFO - level: 5
+2024-11-14 06:16:13,438 - gameManager - INFO - GAMEOVER
+2024-11-14 06:16:13,439 - gameManager - INFO - broadcast -- GAMEOVER

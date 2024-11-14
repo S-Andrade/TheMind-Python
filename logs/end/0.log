@@ -1,0 +1,49 @@
+2024-11-14 06:13:37,953 - 0 - INFO - Connected to Player 0
+2024-11-14 06:13:37,956 - 0 - INFO - add client
+2024-11-14 06:13:43,199 - 0 - INFO - 0 -- message -- WELCOME
+2024-11-14 06:13:43,199 - 0 - INFO - 0 -- NEXTLEVEL
+2024-11-14 06:13:45,353 - 0 - INFO - 0 -- message -- READYTOPLAY
+2024-11-14 06:13:45,354 - 0 - INFO - 0 -- GAME
+2024-11-14 06:13:48,375 - 0 - INFO - 0 -- message -- PLAY 7
+2024-11-14 06:13:48,376 - 0 - INFO - 0 -- PLAY -- 7
+2024-11-14 06:13:48,381 - 0 - INFO - 0 -- broadcast -- CARD 0,7
+2024-11-14 06:13:55,059 - 0 - INFO - 0 -- message -- WELCOME
+2024-11-14 06:13:55,059 - 0 - INFO - 0 -- NEXTLEVEL
+2024-11-14 06:14:02,103 - 0 - INFO - 0 -- message -- READYTOPLAY
+2024-11-14 06:14:02,104 - 0 - INFO - 0 -- GAME
+2024-11-14 06:14:07,903 - 0 - INFO - 0 -- message -- MISTAKE
+2024-11-14 06:14:07,905 - 0 - INFO - 0 -- MISTAKE
+2024-11-14 06:14:16,623 - 0 - INFO - 0 -- message -- PLAY 92
+2024-11-14 06:14:16,624 - 0 - INFO - 0 -- PLAY -- 92
+2024-11-14 06:14:16,628 - 0 - INFO - 0 -- broadcast -- CARD 0,92
+2024-11-14 06:14:25,856 - 0 - INFO - 0 -- message -- WELCOME
+2024-11-14 06:14:25,857 - 0 - INFO - 0 -- NEXTLEVEL
+2024-11-14 06:14:28,346 - 0 - INFO - 0 -- message -- READYTOPLAY
+2024-11-14 06:14:28,346 - 0 - INFO - 0 -- GAME
+2024-11-14 06:14:31,314 - 0 - INFO - 0 -- message -- PLAY 28
+2024-11-14 06:14:31,314 - 0 - INFO - 0 -- PLAY -- 28
+2024-11-14 06:14:31,318 - 0 - INFO - 0 -- broadcast -- CARD 0,28
+2024-11-14 06:14:33,441 - 0 - INFO - 0 -- message -- PLAY 38
+2024-11-14 06:14:33,442 - 0 - INFO - 0 -- PLAY -- 38
+2024-11-14 06:14:33,447 - 0 - INFO - 0 -- broadcast -- CARD 0,38
+2024-11-14 06:15:13,873 - 0 - INFO - 0 -- message -- PLAY 87
+2024-11-14 06:15:13,874 - 0 - INFO - 0 -- PLAY -- 87
+2024-11-14 06:15:13,878 - 0 - INFO - 0 -- broadcast -- CARD 0,87
+2024-11-14 06:15:21,687 - 0 - INFO - 0 -- message -- WELCOME
+2024-11-14 06:15:21,687 - 0 - INFO - 0 -- NEXTLEVEL
+2024-11-14 06:15:23,366 - 0 - INFO - 0 -- message -- READYTOPLAY
+2024-11-14 06:15:23,367 - 0 - INFO - 0 -- GAME
+2024-11-14 06:15:26,169 - 0 - INFO - 0 -- message -- PLAY 1
+2024-11-14 06:15:26,170 - 0 - INFO - 0 -- PLAY -- 1
+2024-11-14 06:15:26,173 - 0 - INFO - 0 -- broadcast -- CARD 0,1
+2024-11-14 06:15:29,349 - 0 - INFO - 0 -- message -- MISTAKE
+2024-11-14 06:15:29,350 - 0 - INFO - 0 -- MISTAKE
+2024-11-14 06:15:39,773 - 0 - INFO - 0 -- message -- PLAY 20
+2024-11-14 06:15:39,774 - 0 - INFO - 0 -- PLAY -- 20
+2024-11-14 06:15:39,778 - 0 - INFO - 0 -- broadcast -- CARD 0,20
+2024-11-14 06:15:45,909 - 0 - INFO - 0 -- message -- PLAY 59
+2024-11-14 06:15:45,911 - 0 - INFO - 0 -- PLAY -- 59
+2024-11-14 06:15:45,917 - 0 - INFO - 0 -- broadcast -- CARD 0,59
+2024-11-14 06:16:08,427 - 0 - INFO - 0 -- message -- PLAY 82
+2024-11-14 06:16:08,428 - 0 - INFO - 0 -- PLAY -- 82
+2024-11-14 06:16:08,431 - 0 - INFO - 0 -- broadcast -- CARD 0,82

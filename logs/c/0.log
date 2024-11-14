@@ -1,20 +1,2 @@
-2024-11-14 02:31:53,171 - 0 - INFO - Connected to Player 0
-2024-11-14 02:31:53,182 - 0 - INFO - add client
-2024-11-14 02:32:09,222 - 0 - INFO - 0 -- message -- WELCOME
-2024-11-14 02:32:09,223 - 0 - INFO - 0 -- NEXTLEVEL
-2024-11-14 02:32:12,431 - 0 - INFO - 0 -- message -- READYTOPLAY
-2024-11-14 02:32:12,432 - 0 - INFO - 0 -- GAME
-2024-11-14 02:32:15,462 - 0 - INFO - 0 -- message -- PLAY 6
-2024-11-14 02:32:15,462 - 0 - INFO - 0 -- PLAY -- 6
-2024-11-14 02:32:15,467 - 0 - INFO - 0 -- broadcast -- CARD 0,6
-2024-11-14 02:32:28,691 - 0 - INFO - 0 -- message -- GAMEOVER
-2024-11-14 02:32:28,693 - 0 - INFO - 0 -- GAMEOVER
-2024-11-14 02:32:33,074 - 0 - INFO - 0 -- message -- WELCOME
-2024-11-14 02:32:33,075 - 0 - INFO - 0 -- NEXTLEVEL
-2024-11-14 02:32:36,447 - 0 - INFO - 0 -- message -- READYTOPLAY
-2024-11-14 02:32:36,449 - 0 - INFO - 0 -- GAME
-2024-11-14 02:32:39,116 - 0 - INFO - 0 -- message -- PLAY 69
-2024-11-14 02:32:39,118 - 0 - INFO - 0 -- PLAY -- 69
-2024-11-14 02:32:39,127 - 0 - INFO - 0 -- broadcast -- CARD 0,69
-2024-11-14 02:32:48,176 - 0 - INFO - 0 -- message -- GAMEOVER
-2024-11-14 02:32:48,178 - 0 - INFO - 0 -- GAMEOVER
+2024-11-14 02:49:25,049 - 0 - INFO - Connected to Player 0
+2024-11-14 02:49:25,053 - 0 - INFO - add client
