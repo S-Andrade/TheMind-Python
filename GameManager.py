@@ -558,7 +558,7 @@ def main():
     logger = setup_logger("main")
     logger.info(f'Connected to Player {id}')
 
-    host = '192.168.1.169'
+    host = '192.168.0.101'
     port = 50001
 
 
