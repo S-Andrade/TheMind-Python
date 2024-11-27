@@ -176,16 +176,16 @@ def worker(shared_dict, shared_data_lock, s, id):
             if shared_dict["level"] < 10:
                 with shared_data_lock:
                     shared_dict["animation"] = "sadness5"
-                    shared_dict["speak"] = "oh Não! Perdemos o jogo!"
+                    shared_dict["speak"] = "oh No! We lost the game!"
                     shared_dict["gazetarget"] = "front"
             if shared_dict["level"] == 10:
                 with shared_data_lock:
                     shared_dict["animation"] = "joy5"
-                    shared_dict["speak"] = "Ganhamos o jogo!"
+                    shared_dict["speak"] = "We won the game!"
                     shared_dict["gazetarget"] = "front"
             time.sleep(1)
             with shared_data_lock:
-                shared_dict["speak"] = "Mais um jogo?"
+                shared_dict["speak"] = "Another game?"
                 shared_dict["state"] = "GAMEOVER"
 
             
@@ -213,7 +213,7 @@ def worker(shared_dict, shared_data_lock, s, id):
                             shared_dict["playcard"] = "player" + player
                             print("player" + player)
                             if shared_dict['timetoplay'] == 1:
-                                shared_dict["speak"] = "Agora sou eu!"
+                                shared_dict["speak"] = "My turn!"
                                 shared_dict["gazetarget"] = "front"
                         #print(shared_dict['timetoplay'])
         
@@ -262,7 +262,7 @@ def worker(shared_dict, shared_data_lock, s, id):
 def main():
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.101', 50001))
+    s.connect(('192.168.0.102', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -301,7 +301,7 @@ def main():
             #print("welcome")
             #     
             if not hi:
-                shared_dict["speak"] = "Olá! Eu sou o émis! E serei o vosso terceiro membro da equipa!"
+                shared_dict["speak"] = "Hello! I'm emis, and I will be a member of the time!"
                 hi = True
 
                 shared_dict["gazetarget"] = "front"
@@ -315,7 +315,7 @@ def main():
         elif shared_dict["state"] == "NEXTLEVEL":
             #print("readyplay")
             if shared_dict["level"] > 1:
-                falas = ["Boa! Passamos um nivel!", "Mais um nivel!"]
+                falas = ["Nice! We've passed a level!", "Another level!"]
                 shared_dict["speak"] = random.choice(falas)
                 shared_dict["gazetarget"] = "front"
                 shared_dict["animation"] = "joy1"
@@ -351,7 +351,7 @@ def main():
 
         elif shared_dict["state"] == "MISTAKE":
             #print("mistake")
-            falas = ["oh não!", "Perdemos uma vida!"]
+            falas = ["oh no!", "We lost a live!"]
             shared_dict["speak"] = random.choice(falas)
             shared_dict["gazetarget"] = "front"
 

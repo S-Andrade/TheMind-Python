@@ -8,6 +8,8 @@ import time
 import logging
 import os
 import sys
+from playsound import playsound
+
 
 #GameState: NEXTLEVEL, REFOCUS, GAME, MISTAKE, USESTAR, DEALCARDS
 #playerState: NEXTLEVEL, READYTOPLAY
@@ -490,6 +492,7 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
             elif shared_data["player"+id+"State"] == "GAME" and shared_data["gameState"] == "GAME" and "PLAY" in msg:  
                 card_played = int(msg[5:])
                 logger.info(f"{id} -- PLAY -- {card_played}")
+                playsound("card-sound.mp3")
                 if (len(shared_data["player0Cards"]) == 0 or card_played <= shared_data["player0Cards"][0]) and (len(shared_data["player1Cards"]) == 0 or card_played <= shared_data["player1Cards"][0]) and (len(shared_data["player2Cards"]) == 0 or card_played <= shared_data["player2Cards"][0]):
                     with shared_data_lock: 
                         shared_data["topPile"] = card_played
@@ -558,7 +561,7 @@ def main():
     logger = setup_logger("main")
     logger.info(f'Connected to Player {id}')
 
-    host = '192.168.0.101'
+    host = '192.168.0.102'
     port = 50001
 
 
