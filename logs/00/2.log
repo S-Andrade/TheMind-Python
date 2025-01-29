@@ -1,0 +1,11 @@
+2024-12-12 10:17:52,444 - 2 - INFO - Connected to Player 2
+2024-12-12 10:17:52,454 - 2 - INFO - add client
+2024-12-12 10:17:52,454 - 2 - INFO - 2 -- message -- WELCOME
+2024-12-12 10:17:52,456 - 2 - INFO - 2 -- NEXTLEVEL
+2024-12-12 10:18:14,996 - 2 - INFO - 2 -- message -- READYTOPLAY
+2024-12-12 10:18:14,998 - 2 - INFO - 2 -- GAME
+2024-12-12 10:18:34,794 - 2 - INFO - 2 -- message -- PLAY 97
+2024-12-12 10:18:34,796 - 2 - INFO - 2 -- PLAY -- 97
+2024-12-12 10:18:35,639 - 2 - INFO - 2 -- broadcast -- CARD 2,97
+2024-12-12 10:18:37,677 - 2 - INFO - 2 -- message -- WELCOME
+2024-12-12 10:18:37,678 - 2 - INFO - 2 -- NEXTLEVEL

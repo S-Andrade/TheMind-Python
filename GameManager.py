@@ -10,7 +10,6 @@ import os
 import sys
 from playsound import playsound
 
-
 #GameState: NEXTLEVEL, REFOCUS, GAME, MISTAKE, USESTAR, DEALCARDS
 #playerState: NEXTLEVEL, READYTOPLAY
 
@@ -249,20 +248,35 @@ def gameManager(server_socket,shared_data, shared_data_lock):
 
     last = False
     pygame.init() 
-    # Get the screen width and height
-    """screen_info = pygame.display.Info()
-    screen_width, screen_height = screen_info.current_w, screen_info.current_h
 
-    # Set up the screen to fullscreen with the screen width and height
-    screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)"""
+    # Get screen info
+    screen_info = pygame.display.Info()
+    shared_data["width"] = screen_info.current_w
+    shared_data["height"] = screen_info.current_h - 25
+    screen = pygame.display.set_mode((shared_data["width"], shared_data["height"]))
 
-    res = (720,720) 
-    screen = pygame.display.set_mode(res) 
     font = pygame.font.SysFont("calibri",80)
     smallfont = pygame.font.SysFont('Corbel',35)
     sfont = pygame.font.SysFont("calibri",40)
 
+    # Define the target position (center of the screen)
+    target_pos = (shared_data["width"] // 2 - shared_data["card_width"] // 2, shared_data["height"] // 2 - shared_data["card_height"] // 2)
+
+    # Movement speed (fraction of the distance per frame)
+    speed = 0.05
+
+    # Create card surfaces
+    center_card_color = (0, 0, 255)  # Blue card in center
+    moving_card_color = (255, 0, 0)  # Red moving card
+
+    center_card_surface = pygame.Surface((shared_data["card_width"], shared_data["card_height"]))
+    center_card_surface.fill(center_card_color)
+
+    moving_card_surface = pygame.Surface((shared_data["card_width"], shared_data["card_height"]))
+    moving_card_surface.fill(moving_card_color)
+    clock = pygame.time.Clock()
     run = True
+
     while True:
         for event in pygame.event.get():
         
@@ -291,8 +305,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
                         print("hello")
 
         if shared_data["gameState"] == "WELCOME":
-            #print("aiaia")
-            #time.sleep(1)
+
             screen.fill((231,84,128))
 
             text = font.render("LEVEL "+ str(shared_data["level"]), True, (0, 0, 0))
@@ -324,29 +337,97 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             pygame.display.flip()
         
         elif shared_data["gameState"] == "GAME":
-        
+
+                
             if shared_data["player0State"] == "MISTAKE" or shared_data["player1State"] == "MISTAKE" or shared_data["player2State"] == "MISTAKE":
                 screen.fill((223,28,28)) 
             else:
                 screen.fill((255,255,255)) 
-            text = font.render(str(shared_data["topPile"]), True, (0, 0, 0))
-            screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            lives = font.render("LIVES: "+ str(shared_data["lives"]), True, (0, 0, 0))
-            screen.blit(lives, (10,10))
-            level = font.render("LEVEL: "+ str(shared_data["level"]), True, (0, 0, 0))
-            screen.blit(level, (10,80))
-            p0 = sfont.render("Player0: "+ str(len(shared_data["player0Cards"])), True, (0, 0, 0))
-            screen.blit(p0, (10,600))
-            p1 = sfont.render("Player1: "+ str(len(shared_data["player1Cards"])), True, (0, 0, 0))
-            screen.blit(p1, (10,640))
-            r = sfont.render("Player2: "+ str(len(shared_data["player2Cards"])), True, (0, 0, 0))
-            screen.blit(r, (10, 680))
-            pygame.display.flip()
+            
+            if shared_data["cardplayed"] == 0:
+                # Draw the stationary center card first
+                    screen.blit(center_card_surface, target_pos)
 
-            #if len(shared_data["player0Cards"]) == 0 and len(shared_data["player1Cards"]) == 0 and len(shared_data["player2Cards"]) == 0:
-            #    time.sleep(1)
+                    # Blit text onto the center card
+                    center_card_text = font.render(str(shared_data["topPile"]), True, (255, 255, 255))
+                    center_card_text_rect = center_card_text.get_rect(center=(target_pos[0] + shared_data["card_width"] // 2, target_pos[1] + shared_data["card_height"] // 2))
+                    screen.blit(center_card_text, center_card_text_rect)
+                   
 
-            #print(shared_data["topPile"])
+                    # Display other text elements
+                    lives = font.render("LIVES: " + str(2), True, (0, 0, 0))
+                    screen.blit(lives, (10, 10))
+                    
+                    level = font.render("LEVEL: " + str(9), True, (0, 0, 0))
+                    screen.blit(level, (10, 80))
+                    
+                    p0 = sfont.render("Player0: " + str(1), True, (0, 0, 0))
+                    screen.blit(p0, (10, shared_data["height"] - 50))
+                    
+                    p1 = sfont.render("Player1: " + str(10), True, (0, 0, 0))
+                    screen.blit(p1, (shared_data["width"] - 200, shared_data["height"] - 50))
+                    
+                    r = sfont.render("Player2: " + str(10), True, (0, 0, 0))
+                    screen.blit(r, ((shared_data["width"] / 2) - 100, 15))
+
+                    # Update the display
+                    pygame.display.flip()
+
+            if shared_data["cardplayed"] != 0:
+                print("cheguei")
+                while True:
+                    
+                    print(event)
+                    with shared_data_lock:
+                        # Update card position (linear interpolation)
+                        shared_data["current_pos"][0] += (target_pos[0] - shared_data["current_pos"][0]) * speed
+                        shared_data["current_pos"][1] += (target_pos[1] - shared_data["current_pos"][1]) * speed
+
+                    # Draw the stationary center card first
+                    screen.blit(center_card_surface, target_pos)
+
+                    # Blit text onto the center card
+                    center_card_text = font.render(str(shared_data["topPile"]), True, (255, 255, 255))
+                    center_card_text_rect = center_card_text.get_rect(center=(target_pos[0] + shared_data["card_width"] // 2, target_pos[1] + shared_data["card_height"] // 2))
+                    screen.blit(center_card_text, center_card_text_rect)
+
+                    # Draw the moving card on top of the stationary card
+                    screen.blit(moving_card_surface, shared_data["current_pos"])
+
+                    # Blit text onto the moving card
+                    moving_card_text = font.render(str(shared_data["cardplayed"]), True, (255, 255, 255))
+                    moving_card_text_rect = moving_card_text.get_rect(center=(shared_data["current_pos"][0] + shared_data["card_width"] // 2, shared_data["current_pos"][1] + shared_data["card_height"] // 2))
+                    screen.blit(moving_card_text, moving_card_text_rect)
+
+                    # Display other text elements
+                    lives = font.render("LIVES: " + str(2), True, (0, 0, 0))
+                    screen.blit(lives, (10, 10))
+                    
+                    level = font.render("LEVEL: " + str(9), True, (0, 0, 0))
+                    screen.blit(level, (10, 80))
+                    
+                    p0 = sfont.render("Player0: " + str(1), True, (0, 0, 0))
+                    screen.blit(p0, (10, shared_data["height"] - 50))
+                    
+                    p1 = sfont.render("Player1: " + str(10), True, (0, 0, 0))
+                    screen.blit(p1, (shared_data["width"] - 200, shared_data["height"] - 50))
+                    
+                    r = sfont.render("Player2: " + str(10), True, (0, 0, 0))
+                    screen.blit(r, ((shared_data["width"] / 2) - 100, 15))
+
+                    # Update the display
+                    pygame.display.flip()
+
+                    # Cap the frame rate
+                    clock.tick(60)
+
+                    # Stop the inner loop if the card reaches the target position
+                    if abs(shared_data["current_pos"][0] - target_pos[0]) < 1 and abs(shared_data["current_pos"][1] - target_pos[1]) < 1:
+                        with shared_data_lock: 
+                            shared_data["topPile"] = shared_data["cardplayed"]
+                            shared_data["cardplayed"] = 0
+                        break  # Exit the inner loop and ask for input again
+
 
         elif shared_data["gameState"] == "REFOCUS":
             screen.fill((51,160,44)) 
@@ -372,7 +453,7 @@ def gameManager(server_socket,shared_data, shared_data_lock):
             pygame.display.flip()
 
         if len(shared_data["player0Cards"]) == 0 and len(shared_data["player1Cards"]) == 0 and len(shared_data["player2Cards"]) == 1:
-            #print("last")
+
             if not last:
                 logger.info("only player2 as cards")
                 broadcast(shared_data["clients"], "LAST".encode())
@@ -390,7 +471,6 @@ def gameManager(server_socket,shared_data, shared_data_lock):
                 shared_data["player2Cards"] = cards_p2
             cards = [cards_p0, cards_p1, cards_p2]
             tosend = "NEXTLEVEL " + str(cards)
-            #print(cards)
             broadcast(shared_data["clients"], tosend.encode())
             logger.info(f"broadcast -- {tosend}")
 
@@ -406,15 +486,13 @@ def gameManager(server_socket,shared_data, shared_data_lock):
                 print(shared_data["gameState"])
                 shared_data["level"] += 1
             logger.info(f'level: {shared_data["level"]}')
-            #print("lock game")
+
             time.sleep(2)
-            #print("lock game+1")
+
             if shared_data["level"] == 5:
                 with shared_data_lock: 
                     shared_data["gameState"] = "GAMEOVER"
-                    #shared_data["player0State"] = "GAMEOVER"
-                    #shared_data["player1State"] = "GAMEOVER"
-                    #shared_data["player2State"] = "GAMEOVER"
+
                     time.sleep(1)
                 print(">>>"+shared_data["gameState"])
                 logger.info("GAMEOVER")
@@ -432,7 +510,6 @@ def gameManager(server_socket,shared_data, shared_data_lock):
                 cards = [cards_p0, cards_p1, cards_p2]
                 logger.info(f"cards: {cards}")
                 tosend = "WELCOME " + str(cards)
-                #print(cards)
                 broadcast(shared_data["clients"], tosend.encode())
                 logger.info(f"broadcast -- {tosend}")
 
@@ -495,12 +572,19 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
                 playsound("card-sound.mp3")
                 if (len(shared_data["player0Cards"]) == 0 or card_played <= shared_data["player0Cards"][0]) and (len(shared_data["player1Cards"]) == 0 or card_played <= shared_data["player1Cards"][0]) and (len(shared_data["player2Cards"]) == 0 or card_played <= shared_data["player2Cards"][0]):
                     with shared_data_lock: 
-                        shared_data["topPile"] = card_played
+                        #shared_data["topPile"] = card_played
+                        shared_data["cardplayed"] = card_played
+                        if id == "2":
+                            start_pos = (shared_data["width"] - shared_data["card_width"], shared_data["height"])  # Right bottom corner
+                        elif id == "1":
+                            start_pos = (0, shared_data["height"])  # Left bottom corner
+                        elif id == "0":
+                            start_pos = (shared_data["width"] // 2 - shared_data["card_width"] // 2, 0)
+                       
+                        shared_data["current_pos"] = list(start_pos)
+
                         shared_data["player"+id+"Cards"] = shared_data["player"+id+"Cards"][1:]
-                    #print("play card " + str(card_played))
-                    #if len(shared_data["player0Cards"]) == 0 and len(shared_data["player1Cards"]) == 0 and len(shared_data["player2Cards"]) == 0:
-                    #    time.sleep(1)
-                    #print("wait_cardplay")
+
                     sendit = f"CARD {id},{str(card_played)}"
                     broadcast(shared_data["clients"], sendit.encode())
                     logger.info(f"{id} -- broadcast -- {sendit}")
@@ -511,13 +595,10 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
                         logger.info(f'{id} -- {shared_data["lives"]}')
                     
                     if shared_data["lives"] == 0:
-                        #game over
-                        #print("gameover")
+                      
                         with shared_data_lock: 
                             shared_data["gameState"] = "GAMEOVER"
-                            #shared_data["player0State"] = "GAMEOVER"
-                            #shared_data["player1State"] = "GAMEOVER"
-                            #shared_data["player2State"] = "GAMEOVER"
+                        
                         logger.info(f"{id} -- GAMEOVER")
                         broadcast(shared_data["clients"], "GAMEOVER".encode())
                         logger.info(f"{id} -- broadcast -- GAMEOVER")
@@ -553,20 +634,17 @@ def on_new_client(conn, addr, id, shared_data, shared_data_lock):
                     shared_data["player"+id+"State"] = "GAMEOVER"
                 logger.info(f"{id} -- GAMEOVER")
 
-            #print(shared_data["player0Cards"])
-            #print(shared_data["player1Cards"])
-            #print(shared_data["player2Cards"])
-                        
+
 def main():
     logger = setup_logger("main")
     logger.info(f'Connected to Player {id}')
 
-    host = '192.168.0.102'
+    host = '127.0.0.1'
     port = 50001
 
 
     with multiprocessing.Manager() as manager:
-        shared_data = manager.dict({"topPile": 0,"gameState":"WELCOME", "level":1 ,"lives": 3, "player0State": "WELCOME", "player0Cards": [],"player1State": "WELCOME", "player1Cards": [],"player2State": "WELCOME", "player2Cards": [], "clients": []})
+        shared_data = manager.dict({"topPile": 0,"gameState":"WELCOME", "level":1 ,"lives": 3, "player0State": "WELCOME", "player0Cards": [],"player1State": "WELCOME", "player1Cards": [],"player2State": "WELCOME", "player2Cards": [], "cardplayed": 0,"clients": [], "current_pos": (), "with": None, "height": None, "card_width": 100, "card_height": 150})
         shared_data_lock = manager.Lock()
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:

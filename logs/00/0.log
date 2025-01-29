@@ -1,0 +1,9 @@
+2024-12-12 10:17:03,455 - 0 - INFO - Connected to Player 0
+2024-12-12 10:17:03,472 - 0 - INFO - add client
+2024-12-12 10:18:14,985 - 0 - INFO - 0 -- message -- WELCOME
+2024-12-12 10:18:14,986 - 0 - INFO - 0 -- NEXTLEVEL
+2024-12-12 10:18:15,656 - 0 - INFO - 0 -- message -- READYTOPLAY
+2024-12-12 10:18:15,657 - 0 - INFO - 0 -- GAME
+2024-12-12 10:18:23,617 - 0 - INFO - 0 -- message -- PLAY 11
+2024-12-12 10:18:23,622 - 0 - INFO - 0 -- PLAY -- 11
+2024-12-12 10:18:25,060 - 0 - INFO - 0 -- broadcast -- CARD 0,11

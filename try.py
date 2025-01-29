@@ -1,198 +1,145 @@
-import random
+import pygame
+import time
 
-def getCards(Level):
-    cards = []
+pygame.init() 
 
-    if Level == 1:
-        cards.append(random.randint(1, 20))
-        cards.append(random.randint(50, 60))
-        cards.append(random.randint(90, 100))
-        random.shuffle(cards)
 
-    elif Level == 2:
-        while len(cards) < 5:
-            next_card = random.randint(50, 100)
-            if next_card not in cards:
-                cards.append(next_card)
+screen_info = pygame.display.Info()
+width, height = screen_info.current_w, screen_info.current_h
 
-        b = True
-        while b:
-            c = cards[random.randint(0, 3)] + 2
-            if c not in cards and c < 100:
-                cards.append(c)
-                b = False
+# Set up the screen to fullscreen with the screen width and height
+screen = pygame.display.set_mode((width, height))
 
-    elif Level == 3:
-        while len(cards) < 7:
-            next_card = random.randint(1, 100)
-            if next_card not in cards:
-                cards.append(next_card)
-        b = True
-        while b:
-            c = cards[random.randint(2, 6)] + 3
-            if c not in cards and c < 100:
-                cards.insert(4, c)
-                b = False
-        b = True
-        while b:
-            c = cards[random.randint(2, 7)] + 1
-            if c not in cards  and c < 100:
-                cards.insert(0, c)
-                b = False
+font = pygame.font.SysFont("calibri",80)
+smallfont = pygame.font.SysFont('Corbel',35)
+sfont = pygame.font.SysFont("calibri",40)
 
-    elif Level == 4:
-        cards.append(1)
-        e = f = g = 0
-        while len(cards) < 11:
-            if e < 3:
-                next_card = random.randint(1, 20)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    e += 1
-            if f < 3:
-                next_card = random.randint(50, 70)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    f += 1
-            if g < 4:
-                next_card = random.randint(75, 100)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    g += 1
-        b = True
-        while b:
-            c = cards[random.randint(4, 6)] + 2
-            if c not in cards and c < 100:
-                cards.insert(7, c)
-                b = False
+# Card properties
+card_width, card_height = 100, 150
+start_pos = (10, 10)  # Top-left corner
+target_pos = (width // 2 - card_width // 2, height // 2 - card_height // 2)
+current_pos = list(start_pos)
 
-    elif Level == 5:
-        f = g = 0
-        while len(cards) < 13:
-            if f < 7:
-                next_card = random.randint(1, 20)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    f += 1
-            if g < 7:
-                next_card = random.randint(70, 100)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    g += 1
-        b = True
-        while b:
-            c = cards[random.randint(0, 3)] + 2
-            if c not in cards and c < 100:
-                cards.insert(4, c)
-                b = False
-        b = True
-        while b:
-            c = cards[random.randint(0, 9)] + 5
-            if c not in cards and c < 100:
-                cards.append(c)
-                b = False
+# Movement speed (fraction of the distance per frame)
+speed = 0.05
 
-    elif Level == 6:
-        f = g = 0
-        while len(cards) < 18:
-            if f < 9:
-                next_card = random.randint(1, 20)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    f += 1
-            if g < 9:
-                next_card = random.randint(70, 100)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    g += 1
+# Load card images (placeholders: colored rectangles)
+center_card_color = (0, 0, 255)  # Blue for the stationary card
+moving_card_color = (255, 0, 0)  # Red for the moving card
 
-    elif Level == 7:
-        f = g = 0
-        while len(cards) < 19:
-            if f < 3:
-                next_card = random.randint(1, 10)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    f += 1
-            if g < 16:
-                next_card = random.randint(40, 100)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    g += 1
-        b = True
-        while b:
-            c = cards[random.randint(0, 5)] + 2
-            if c not in cards and c < 100:
-                cards.insert(6, c)
-                b = False
-        b = True
-        while b:
-            c = cards[random.randint(7, 13)] + 1
-            if c not in cards and c < 100:
-                cards.append(c)
-                b = False
+center_card_surface = pygame.Surface((card_width, card_height))
+center_card_surface.fill(center_card_color)
 
-    elif Level == 8:
-        e = f = g = 0
-        while len(cards) < 24:
-            if e < 8:
-                next_card = random.randint(1, 20)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    e += 1
-            if f < 8:
-                next_card = random.randint(25, 40)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    f += 1
-            if g < 8:
-                next_card = random.randint(50, 100)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    g += 1
+moving_card_surface = pygame.Surface((card_width, card_height))
+moving_card_surface.fill(moving_card_color)
 
-    elif Level == 9:
-        f = g = 0
-        while len(cards) < 25:
-            if f < 9:
-                next_card = random.randint(1, 25)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    f += 1
-            if g < 16:
-                next_card = random.randint(50, 100)
-                if next_card not in cards:
-                    cards.append(next_card)
-                    g += 1
-        b = True
-        while b:
-            c = cards[random.randint(9, 16)] + 3
-            if c not in cards and c < 100:
-                cards.insert(17, c)
-                b = False
-        b = True
-        while b:
-            c = cards[random.randint(0, 8)] + 1
-            if c not in cards and c < 100:
-                cards.append(c)
-                b = False
+clock = pygame.time.Clock()
+running = True
 
-    elif Level == 10:
-        while len(cards) < 30:
-            next_card = random.randint(1, 100)
-            if next_card not in cards:
-                cards.append(next_card)
+last_position = [-1,-1]
+count_position = 
 
-    print(cards)
-    # Distribute cards to each player
-    hands = []
-    for i in range(3):
-        hand = cards[i*Level : (i + 1)*Level]
-        hands.append(sorted(hand))
+while running:
+    screen.fill((255,255,255)) 
 
-    return hands
+    text = font.render(str(20), True, (0, 0, 0))
+    screen.blit(center_card_surface, target_pos)
+
+    lives = font.render("LIVES: "+ str(2), True, (0, 0, 0))
+    screen.blit(lives, (10,10))
+    level = font.render("LEVEL: "+ str(9), True, (0, 0, 0))
+    screen.blit(level, (10,80))
+    p0 = sfont.render("Player0: "+ str(1), True, (0, 0, 0))
+    screen.blit(p0, (10,height-50))
+    p1 = sfont.render("Player1: "+ str(10), True, (0, 0, 0))
+    screen.blit(p1, (width-200,height-50))
+    r = sfont.render("Player2: "+ str(10), True, (0, 0, 0))
+    screen.blit(r, ((width/2)-100, 15))
+    pygame.display.flip()
+
+
+    # Linear interpolation for smooth movement
+    current_pos[0] += (target_pos[0] - current_pos[0]) * speed
+    current_pos[1] += (target_pos[1] - current_pos[1]) * speed
+    # Draw the moving card on top
+    screen.blit(moving_card_surface, current_pos)
+    
+    # Update display
+    pygame.display.flip()
+    print(current_pos)
+    if current_pos[0] == last_position[0] and current_pos[1] == last_position[1]:
+        running = False
+
+    last_position = current_pos
+    print(last_position)
+    # Cap the frame rate
+    clock.tick(60)
+
+time.sleep(2)
 
 
 
-cards = getCards(10)
-print(cards)
+
+"""import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+screen_width, screen_height = 800, 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Card Movement Example")
+
+# Card properties
+card_width, card_height = 100, 150
+start_pos = (10, 10)  # Top-left corner
+target_pos = (screen_width // 2 - card_width // 2, screen_height // 2 - card_height // 2)
+current_pos = list(start_pos)
+
+# Movement speed (fraction of the distance per frame)
+speed = 0.05
+
+# Load card images (placeholders: colored rectangles)
+center_card_color = (0, 0, 255)  # Blue for the stationary card
+moving_card_color = (255, 0, 0)  # Red for the moving card
+
+center_card_surface = pygame.Surface((card_width, card_height))
+center_card_surface.fill(center_card_color)
+
+moving_card_surface = pygame.Surface((card_width, card_height))
+moving_card_surface.fill(moving_card_color)
+
+# Main loop
+clock = pygame.time.Clock()
+running = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Linear interpolation for smooth movement
+    current_pos[0] += (target_pos[0] - current_pos[0]) * speed
+    current_pos[1] += (target_pos[1] - current_pos[1]) * speed
+
+    # Clear screen
+    screen.fill((30, 30, 30))
+
+    # Draw the center card first (stationary card)
+    screen.blit(center_card_surface, target_pos)
+
+    # Draw the moving card on top
+    screen.blit(moving_card_surface, current_pos)
+
+    # Update display
+    pygame.display.flip()
+
+    # Cap the frame rate
+    clock.tick(60)
+
+# Quit Pygame
+pygame.quit()
+sys.exit()
+
+"""
