@@ -1,6 +1,0 @@
-2024-11-22 12:27:59,941 - gameManager - INFO - START
-2024-11-22 12:29:55,174 - gameManager - INFO - NEXTLEVEL
-2024-11-22 12:29:55,179 - gameManager - INFO - broadcast -- NEXTLEVEL [[4], [59], [91]]
-2024-11-22 12:29:59,269 - gameManager - INFO - GAME
-2024-11-22 12:29:59,275 - gameManager - INFO - broadcast -- GAME
-2024-11-22 12:30:08,468 - gameManager - INFO - only player2 as cards

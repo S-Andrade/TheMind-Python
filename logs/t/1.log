@@ -1,9 +1,0 @@
-2025-01-29 01:00:48,753 - 1 - INFO - Connected to Player 1
-2025-01-29 01:00:48,762 - 1 - INFO - add client
-2025-01-29 01:01:05,227 - 1 - INFO - 1 -- message -- WELCOME
-2025-01-29 01:01:05,228 - 1 - INFO - 1 -- NEXTLEVEL
-2025-01-29 01:01:13,559 - 1 - INFO - 1 -- message -- READYTOPLAY
-2025-01-29 01:01:13,562 - 1 - INFO - 1 -- GAME
-2025-01-29 01:01:24,600 - 1 - INFO - 1 -- message -- PLAY 60
-2025-01-29 01:01:24,602 - 1 - INFO - 1 -- PLAY -- 60
-2025-01-29 01:01:25,677 - 1 - INFO - 1 -- broadcast -- CARD 1,60

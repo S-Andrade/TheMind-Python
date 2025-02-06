@@ -1,9 +1,0 @@
-2024-11-21 11:57:38,458 - 0 - INFO - Connected to Player 0
-2024-11-21 11:57:38,480 - 0 - INFO - add client
-2024-11-21 11:57:57,893 - 0 - INFO - 0 -- message -- WELCOME
-2024-11-21 11:57:57,895 - 0 - INFO - 0 -- NEXTLEVEL
-2024-11-21 11:58:03,244 - 0 - INFO - 0 -- message -- READYTOPLAY
-2024-11-21 11:58:03,246 - 0 - INFO - 0 -- GAME
-2024-11-21 11:58:04,491 - 0 - INFO - 0 -- message -- PLAY 10
-2024-11-21 11:58:04,493 - 0 - INFO - 0 -- PLAY -- 10
-2024-11-21 11:58:05,663 - 0 - INFO - 0 -- broadcast -- CARD 0,10

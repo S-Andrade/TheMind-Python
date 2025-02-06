@@ -1,6 +1,6 @@
-2024-12-12 10:16:55,734 - main - INFO - Connected to Player <built-in function id>
-2024-12-12 10:16:57,882 - main - INFO - Server listening on 127.0.0.1:50001
-2024-12-12 10:16:57,930 - main - INFO - gameManager start
-2024-12-12 10:17:01,240 - main - INFO - start 0
-2024-12-12 10:17:04,242 - main - INFO - start 1
-2024-12-12 10:17:50,388 - main - INFO - start 2
+2025-02-06 01:23:34,664 - main - INFO - Connected to Player <built-in function id>
+2025-02-06 01:23:34,665 - main - INFO - Server listening on 127.0.0.1:50001
+2025-02-06 01:23:34,666 - main - INFO - gameManager start
+2025-02-06 01:23:37,152 - main - INFO - start 0
+2025-02-06 01:23:38,807 - main - INFO - start 1
+2025-02-06 01:23:40,951 - main - INFO - start 2
