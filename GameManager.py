@@ -17,7 +17,7 @@ import threading
 
 def setup_logger(process_name):
     # Define the directory and log file path
-    log_dir = os.path.join("logs", sys.argv[1])
+    log_dir = os.path.join("logs", "debug")
     log_file = os.path.join(log_dir, process_name + ".log")
     
     # Ensure the directory exists
@@ -49,7 +49,7 @@ class Player:
         self.state = "WELCOME"
     
     def print_player(self):
-        print(str(self.id) + " " + str(self.state) + " " + str(self.cards))
+        return str(self.id) + " " + str(self.state) + " " + str(self.cards)
 
 def broadcast(clients, message): 
         print(message)         
@@ -261,7 +261,7 @@ def gameManager(server_socket):
     # Get screen info
     screen_info = pygame.display.Info()
     width = screen_info.current_w
-    height = screen_info.current_h - 25
+    height = screen_info.current_h - 50
     screen = pygame.display.set_mode((width, height))
 
     font = pygame.font.SysFont("calibri",80)
@@ -276,7 +276,7 @@ def gameManager(server_socket):
 
     while run:
         for event in pygame.event.get():
-        
+             
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -300,6 +300,8 @@ def gameManager(server_socket):
         #p0.print_player()
         #p1.print_player()
         #p2.print_player()
+
+        print(p0.print_player() + " " + p1.print_player() + " " + p2.print_player())
 
         if len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 1:
 
@@ -358,7 +360,7 @@ def gameManager(server_socket):
         elif gameState == "GAME" and  (len(p0.cards) == 0 or p0.state == "MISTAKE") and  (len(p1.cards) == 0 or p1.state == "MISTAKE") and  (len(p2.cards) == 0 or p2.state == "MISTAKE"):
             p0.cards = [x for x in p0.cards if x >= topPile]
             p1.cards = [x for x in p1.cards if x >= topPile]
-            p2.cards = [x for x in p1.cards if x >= topPile]
+            p2.cards = [x for x in p2.cards if x >= topPile]
             gameState = "GAME"
             p0.state = "GAME"
             p1.state = "GAME"
@@ -437,7 +439,7 @@ def gameManager(server_socket):
             if len(player_played) > 0 and time.time() - player_played[1] < 2:
             
                 if player_played[0] == "0":
-                    print(player_played)
+                    #print(player_played)
                     angle = 45
                     rotated_image = pygame.transform.rotate(image, angle)
                     rect = rotated_image.get_rect(center=(width/4, height*(3/4)))

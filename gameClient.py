@@ -90,6 +90,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if event.type == pygame.MOUSEBUTTONUP:
+                continue 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if state == "WELCOME":
                     s.send("WELCOME".encode())
