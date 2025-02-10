@@ -62,37 +62,37 @@ def getCards(Level):
     if Level == 1:
         cards.append(random.randint(1, 20))
         cards.append(random.randint(50, 60))
-        cards.append(random.randint(90, 100))
-        #random.shuffle(cards)
+        cards.append(random.randint(90, 99))
+        random.shuffle(cards)
 
     elif Level == 2:
         while len(cards) < 5:
-            next_card = random.randint(50, 100)
+            next_card = random.randint(50, 99)
             if next_card not in cards:
                 cards.append(next_card)
 
         b = True
         while b:
             c = cards[random.randint(0, 3)] + 2
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.append(c)
                 b = False
 
     elif Level == 3:
         while len(cards) < 7:
-            next_card = random.randint(1, 100)
+            next_card = random.randint(1, 99)
             if next_card not in cards:
                 cards.append(next_card)
         b = True
         while b:
             c = cards[random.randint(2, 6)] + 3
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.insert(4, c)
                 b = False
         b = True
         while b:
             c = cards[random.randint(2, 7)] + 1
-            if c not in cards  and c < 100:
+            if c not in cards  and c < 99:
                 cards.insert(0, c)
                 b = False
 
@@ -111,14 +111,14 @@ def getCards(Level):
                     cards.append(next_card)
                     f += 1
             if g < 4:
-                next_card = random.randint(75, 100)
+                next_card = random.randint(75, 99)
                 if next_card not in cards:
                     cards.append(next_card)
                     g += 1
         b = True
         while b:
             c = cards[random.randint(4, 6)] + 2
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.insert(7, c)
                 b = False
 
@@ -131,20 +131,20 @@ def getCards(Level):
                     cards.append(next_card)
                     f += 1
             if g < 7:
-                next_card = random.randint(70, 100)
+                next_card = random.randint(70, 99)
                 if next_card not in cards:
                     cards.append(next_card)
                     g += 1
         b = True
         while b:
             c = cards[random.randint(0, 3)] + 2
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.insert(4, c)
                 b = False
         b = True
         while b:
             c = cards[random.randint(0, 9)] + 5
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.append(c)
                 b = False
 
@@ -157,7 +157,7 @@ def getCards(Level):
                     cards.append(next_card)
                     f += 1
             if g < 9:
-                next_card = random.randint(70, 100)
+                next_card = random.randint(70, 99)
                 if next_card not in cards:
                     cards.append(next_card)
                     g += 1
@@ -171,20 +171,20 @@ def getCards(Level):
                     cards.append(next_card)
                     f += 1
             if g < 16:
-                next_card = random.randint(40, 100)
+                next_card = random.randint(40, 99)
                 if next_card not in cards:
                     cards.append(next_card)
                     g += 1
         b = True
         while b:
             c = cards[random.randint(0, 5)] + 2
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.insert(6, c)
                 b = False
         b = True
         while b:
             c = cards[random.randint(7, 13)] + 1
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.append(c)
                 b = False
 
@@ -202,7 +202,7 @@ def getCards(Level):
                     cards.append(next_card)
                     f += 1
             if g < 8:
-                next_card = random.randint(50, 100)
+                next_card = random.randint(50, 99)
                 if next_card not in cards:
                     cards.append(next_card)
                     g += 1
@@ -216,26 +216,26 @@ def getCards(Level):
                     cards.append(next_card)
                     f += 1
             if g < 16:
-                next_card = random.randint(50, 100)
+                next_card = random.randint(50, 99)
                 if next_card not in cards:
                     cards.append(next_card)
                     g += 1
         b = True
         while b:
             c = cards[random.randint(9, 16)] + 3
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.insert(17, c)
                 b = False
         b = True
         while b:
             c = cards[random.randint(0, 8)] + 1
-            if c not in cards and c < 100:
+            if c not in cards and c < 99:
                 cards.append(c)
                 b = False
 
     elif Level == 10:
         while len(cards) < 30:
-            next_card = random.randint(1, 100)
+            next_card = random.randint(1, 99)
             if next_card not in cards:
                 cards.append(next_card)
 
@@ -380,7 +380,6 @@ def gameManager(server_socket):
             logger.info("end REFOCUS")
             broadcast(clients, "GAME".encode())
             logger.info("broadcast -- GAME")
-        
 
         if gameState == "WELCOME":
 
@@ -457,10 +456,7 @@ def gameManager(server_socket):
                     screen.blit(rotated_image, rect.topleft)
             
             pygame.display.flip()
-                
-
-            
-                    
+                                
         elif gameState == "REFOCUS":
             screen.fill((51,160,44)) 
             text = font.render(str(topPile), True, (0, 0, 0))
@@ -622,7 +618,7 @@ def main():
     card_played = 0
     player_played = []
 
-    host = '192.168.1.169'
+    host = '192.168.0.100'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
