@@ -489,6 +489,9 @@ def on_new_client(conn, addr, id):
     
     clients.append(conn)
 
+    pygame.mixer.init() 
+    sound = pygame.mixer.Sound("card-sound.mp3")
+
     with conn:
         while True:
             msg = conn.recv(1024)
@@ -520,7 +523,8 @@ def on_new_client(conn, addr, id):
                 topPile = card_played
                 player_played = [id , time.time()] 
                 logger.info(f"{id} -- PLAY -- {card_played}")
-                playsound("card-sound.mp3")
+                #playsound("card-sound.mp3")
+                sound.play()
 
 
                 if (len(p0.cards) == 0 or card_played <= p0.cards[0]) and (len(p1.cards) == 0 or card_played <= p1.cards[0]) and (len(p2.cards) == 0 or card_played <= p2.cards[0]):
@@ -618,7 +622,7 @@ def main():
     card_played = 0
     player_played = []
 
-    host = '192.168.0.100'
+    host = '127.0.0.1'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
