@@ -624,7 +624,7 @@ def main():
     card_played = 0
     player_played = []
 
-    host = '127.0.0.1'
+    host = '192.168.1.169'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:

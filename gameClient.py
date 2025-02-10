@@ -75,7 +75,7 @@ def main():
     id = sys.argv[1]
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('127.0.0.1', 50001))
+    s.connect(('192.168.1.169', 50001))
     msgid = "Player " + id
     s.send(msgid.encode())
 
@@ -84,6 +84,10 @@ def main():
 
     width = screen.get_width() 
     height = screen.get_height()
+
+    button_play = pygame.Rect(width/2.5,height/2.5,120,100)
+    button_refocus = pygame.Rect(width/5,height/5,120,100)
+
     
     run = True
     while run:
@@ -102,10 +106,10 @@ def main():
                     state = "WAITING_NEXTLEVEL"
 
                 elif state  == "GAME" and len(cards) > 0:
-                    if width/5 <= mouse[0] <= width/5+120 and height/5 <= mouse[1] <= height/5+100: 
+                    if button_refocus.collidepoint(event.pos): 
                         s.send("ASK_REFOCUS".encode())
                         state = "ASK_REFOCUS" 
-                    if width/2.5 <= mouse[0] <= width/2.5+120 and height/2.5 <= mouse[1] <= height/2.5+100:
+                    if button_play.collidepoint(event.pos):
                         tosend = "PLAY " +  str(cards[0])
                         s.send(tosend.encode())
                         lastplay = cards[0]
@@ -173,20 +177,13 @@ def main():
                 x = 0
             screen.blit(cards_text, (x ,height/1.5))
 
-            if width/5 <= mouse[0] <= width/5+120 and height/5 <= mouse[1] <= height/5+100: 
-                pygame.draw.rect(screen,(178,223,138) ,[width/5,height/5,120,100]) 
-
-            else: 
-                pygame.draw.rect(screen,(51,160,44) ,[width/5,height/5,120,100])
+            
+            pygame.draw.rect(screen,(51,160,44) , button_refocus)
             
             text = smallfont.render('refocus' , True , (0,0,0) )
             screen.blit(text , (width/5+10,height/5+30)) 
 
-            if width/2.5 <= mouse[0] <= width/2.5+120 and height/2.5 <= mouse[1] <= height/2.5+100: 
-                pygame.draw.rect(screen,(178,223,138) ,[width/2.5,height/2.5,120,100]) 
-
-            else: 
-                pygame.draw.rect(screen,(51,160,44) ,[width/2.5,height/2.5,120,100])
+            pygame.draw.rect(screen,(51,160,44) , button_play)
 
             text = smallfont.render('play' , True , (0,0,0) )
             screen.blit(text , (width/2.5+30,height/2.5+30)) 
