@@ -76,7 +76,7 @@ def robot():
             if  currentGazeTargetCondition == "":
                 currentGazeTargetCondition = random.choice(targets)
                 gazeTime = float(random.randrange(50,300)/100)
-                nextTimeToLook = float(random.randrange(900,1400)/100) + gazeTime
+                nextTimeToLook = float(random.randrange(300,500)/100) + gazeTime
                 timeGaze = time.time()
                 endGaze = False
                 message = f'GazeAtTarget,{currentGazeTargetCondition}'

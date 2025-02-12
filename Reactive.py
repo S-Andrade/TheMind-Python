@@ -4,10 +4,10 @@ import socket
 import sys
 import random
 
-global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
 
 def robot():
-    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
     # Cria um socket TCP
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -25,8 +25,9 @@ def robot():
     gazeTime = 0
     timeGaze = time.time()
     endGaze = False
-    player0 = 0
-    player1 = 0
+    player0_count = 0
+    player1_count = 0
+    targetPlayer = ""
 
     while True:
         #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))
@@ -52,10 +53,10 @@ def robot():
             print(">>" + playcard)
             #print(">>>>>>" + playcard)
             if playcard == "player0":
-                player0 += 1
+                player0_count += 1
             
             if playcard == "player1":
-                player1 += 1
+                player1_count += 1
 
             playcard = ""
 
@@ -66,7 +67,7 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = float(random.randrange(900,1400)/100)
+                nextTimeToLook = float(random.randrange(300,500)/100)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -76,11 +77,11 @@ def robot():
                 if time.time() - timeGaze >= nextTimeToLook:
                     if currentGazeTargetFront == "player0":
                         currentGazeTargetFront = "player1"
-                        player1 += 1
+                        player1_count += 1
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
-                        player0 += 1
-                    nextTimeToLook = float(random.randrange(900,1400)/100)
+                        player0_count += 1
+                    nextTimeToLook = float(random.randrange(300,500)/100)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
@@ -95,52 +96,85 @@ def robot():
         if gazetarget == "condition":
 
             if  targetPlayer == "":
-            
-                if len(cards0) == 0 and len(cards1) > 0:
-                    targetPlayer = "player1"
-                    player1 += 1
-                elif len(cards1) == 0 and len(cards0) > 0:
+                print(str(player0) + "  " + str(player1))
+                #MutualGaze
+                if player0 == "Robot" and (player1 == "Center" or player1 == "Tablet"):
                     targetPlayer = "player0"
-                    player0 += 1
-                elif player0 > player1:
-                    targetPlayer = "player1"
-                    player1 += 1
-                elif player1 > player0:
-                    targetPlayer = "player0"
-                    player0 += 1
-                else:
-                    targetPlayer = random.choice(players)
-
-                    if targetPlayer == "player0":
-                        player0 += 1
-                    
-                    if targetPlayer == "player1":
-                        player1 += 1
+                    player0_count += 1
                 
-                gazeTime = float(random.randrange(50,300)/100)
-                nextTimeToLook = float(random.randrange(900,1400)/100) + gazeTime
+                elif player1 == "Robot" and (player0 == "Center" or player0 == "Tablet"):
+                    targetPlayer = "player1"
+                    player1_count += 1
+                
+                elif (player0 == "Player" and player1 == "Player") or (player0 == "Robot" and player1 == "Robot"):
+
+                    if player0 > player1:
+                        targetPlayer = "player1"
+                        player1_count += 1
+                    elif player1 > player0:
+                        targetPlayer = "player0"
+                        player0_count += 1
+                    else:
+                        targetPlayer = random.choice(players)
+
+                        if targetPlayer == "player0":
+                            player0_count += 1
+                            
+                        if targetPlayer == "player1":
+                            player1_count += 1    
+
+                #JointAttention
+                elif player0 == "Player" and (player1 == "Center" or player1 == "Tablet"):
+                    targetPlayer = "player1"
+                    player1_count += 1
+                
+                elif player1 == "Player" and (player0 == "Center" or player0 == "Tablet"):
+                    targetPlayer = "player0"
+                    player0_count += 1
+
+                elif player0 == "Robot" and player1 == "Player":
+                    targetPlayer = "player0"
+                    player0_count += 1
+                
+                elif player1 == "Robot" and player0 == "Player":
+                    targetPlayer = "player1"
+                    player1_count += 1
+                
+                elif player0 == "Center" and player1 == "Center":
+                    targetPlayer = "mainscreen"
+                
+                else:
+                    targetPlayer = "mainscreen"
+                        
+                
+                nextTimeToLook = float(random.randrange(300,500)/100)
                 timeGaze = time.time()
-                endGaze = False
                 message = f'GazeAtTarget,{targetPlayer}'
                 client_socket.sendall(message.encode('utf-8'))
-                #print("r>" + message)
+                print("r>" + message)
 
             
             if  targetPlayer != "":
 
-                if time.time() - timeGaze >= nextTimeToLook + gazeTime:
+                if time.time() - timeGaze >= nextTimeToLook:
                     targetPlayer = ""
                     #print(message)
                 
-                elif time.time() - timeGaze >= gazeTime and not endGaze:
-                    message = f'GazeAtTarget,mainscreen'
-                    client_socket.sendall(message.encode('utf-8'))
-                    #print("mm>"+message)
-                    endGaze = True
+def gaze(conn, addr, id):
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget
+
+    print(f'Connected by {addr}')
+    with conn:
+        while True:
+            msg = conn.recv(1024)
+            if id == "player0":
+                player0 = msg.decode()
+            if id == "player1":
+                player1 = msg.decode()
 
 # Function to be executed in the parallel process
 def worker(s, id):
-    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
   
     while True:
         msg = s.recv(1024)
@@ -236,10 +270,9 @@ def worker(s, id):
             if "REFOCUS" in msg:
                 state = "REFOCUS"
                 
-        
-            
+           
 def main():
-    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
 
     cards = [] 
     cards0 = []
@@ -256,7 +289,6 @@ def main():
     animation = "" 
     gazetarget = ""
     last = False
-    targetPlayer = ""
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
@@ -269,6 +301,20 @@ def main():
 
     threading.Thread(target=robot).start()
 
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        try:
+            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_socket.bind(("127.0.0.1", 50009))
+            server_socket.listen()
+            print(f'Server listening')
+        except Exception as e:
+            raise
+
+        for i in range(2):
+            conn, addr = server_socket.accept()
+            first = conn.recv(1024)
+            first = first.decode()
+            threading.Thread(target=gaze, args=(conn, addr, first, )).start()
 
     hi = False
 

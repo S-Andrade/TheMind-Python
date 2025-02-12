@@ -255,6 +255,7 @@ def gameManager(server_socket):
     logger = setup_logger("gameManager")
     logger.info("START")
 
+    ultima = False
     last = False
     pygame.init() 
 
@@ -271,6 +272,8 @@ def gameManager(server_socket):
     image = pygame.image.load("arrow.png").convert_alpha()
     image = pygame.transform.scale(image, (150, 150))
 
+    win_time = None
+    ultima_time = None
    
     run = True
 
@@ -330,20 +333,20 @@ def gameManager(server_socket):
             broadcast(clients, "GAME".encode())
             logger.info("broadcast -- GAME")
 
-        elif gameState == "GAME" and  len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 0:
+        elif gameState == "GAME" and  len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 0 and ultima == False:
+            ultima_time = time.time()
+            ultima = True
+
+        elif gameState == "GAME" and  len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 0 and time.time() - ultima_time >= 2:
             level += 1
             logger.info(f'level: {level}')
 
             time.sleep(2)
 
             if level == 5:
-                gameState = "GAMEOVER"
-
-                time.sleep(1)
+                gameState = "WIN"
+                win_time = time.time()
                 
-                logger.info("GAMEOVER")
-                broadcast(clients, "GAMEOVER".encode())
-                logger.info("broadcast -- GAMEOVER")
             else:
                 gameState = "WELCOME"
                 topPile = 0
@@ -356,6 +359,8 @@ def gameManager(server_socket):
                 tosend = "WELCOME " + str(cards)
                 broadcast(clients, tosend.encode())
                 logger.info(f"broadcast -- {tosend}")
+            
+            ultima = False
 
         elif gameState == "GAME" and  (len(p0.cards) == 0 or p0.state == "MISTAKE") and  (len(p1.cards) == 0 or p1.state == "MISTAKE") and  (len(p2.cards) == 0 or p2.state == "MISTAKE"):
             p0.cards = [x for x in p0.cards if x >= topPile]
@@ -382,6 +387,15 @@ def gameManager(server_socket):
             logger.info("end REFOCUS")
             broadcast(clients, "GAME".encode())
             logger.info("broadcast -- GAME")
+
+        elif gameState == "WIN":
+
+            if time.time() - win_time >= 2:
+
+                gameState = "GAMEOVER"
+                logger.info("GAMEOVER")
+                broadcast(clients, "GAMEOVER".encode())
+                logger.info("broadcast -- GAMEOVER")
 
         if gameState == "WELCOME":
 
@@ -473,6 +487,13 @@ def gameManager(server_socket):
             screen.blit(pl1, (width-200,height-50))
             r = sfont.render("Player2: "+ str(len(p2.cards)), True, (0, 0, 0))
             screen.blit(r, (width/2-50, 10))
+            pygame.display.flip()
+
+        elif gameState == "WIN":
+            time.sleep(1)
+            screen.fill((255,140,0)) 
+            text = font.render("VICTORY", True, (0, 0, 0))
+            screen.blit(text, text.get_rect(center = screen.get_rect().center))
             pygame.display.flip()
 
         elif gameState == "GAMEOVER":
