@@ -3,6 +3,7 @@ import time
 import socket
 import sys
 import random
+import re
 
 global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
 
@@ -35,7 +36,7 @@ def robot():
         if animation != "":
             message = f'PlayAnimation,player2,{animation}'
             client_socket.sendall(message.encode('utf-8'))
-            print(message)
+            #print(message)
             animation = ""
         
         if speak != "":
@@ -162,15 +163,19 @@ def robot():
                 
 def gaze(conn, addr, id):
     global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget
-
+    print(id)
     print(f'Connected by {addr}')
     with conn:
         while True:
             msg = conn.recv(1024)
-            if id == "player0":
-                player0 = msg.decode()
-            if id == "player1":
-                player1 = msg.decode()
+
+            words = re.findall(r'[A-Z][a-z]*', msg.decode())
+            target = words[-1]
+
+            if id == "0":
+                player0 = target
+            if id == "1":
+                player1 = target
 
 # Function to be executed in the parallel process
 def worker(s, id):
@@ -237,7 +242,7 @@ def worker(s, id):
         elif "LAST" in msg:
                 timetoplay = 2
                 starttime = time.time()
-                print(timetoplay)
+                #print(timetoplay)
                 last = True
         
         elif len(cards) == 0:
@@ -259,13 +264,13 @@ def worker(s, id):
                 if "LAST" in msg:
                     timetoplay = 2
                     starttime = time.time()
-                    print(timetoplay)
+                    #print(timetoplay)
                     last = True
                 else:
                     if len(cards) > 0:
                         timetoplay = cards[0] - mistake
                         starttime = time.time()
-                        print(timetoplay)
+                        #print(timetoplay)
 
             if "REFOCUS" in msg:
                 state = "REFOCUS"
@@ -314,7 +319,8 @@ def main():
             conn, addr = server_socket.accept()
             first = conn.recv(1024)
             first = first.decode()
-            threading.Thread(target=gaze, args=(conn, addr, first, )).start()
+            player_id = ''.join(x for x in first if x.isdigit())
+            threading.Thread(target=gaze, args=(conn, addr, player_id, )).start()
 
     hi = False
 

@@ -7,7 +7,7 @@ import random
 sGaze = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
 sGaze.connect(('127.0.0.1', 50009))
    
-gazes = ["Player", "Center", "Tablet"]
+gazes = ["Player", "Center", "Tablet", "Robot"]
 
 def gaze():
     i = 0
