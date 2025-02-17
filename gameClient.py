@@ -66,27 +66,27 @@ def main():
     # initializing the constructor 
     pygame.init() 
     
-    # screen resolution 
-    res = (720,720) 
-    screen = pygame.display.set_mode(res) 
-    font = pygame.font.SysFont("calibri",80)
-    smallfont = pygame.font.SysFont('Corbel',35) 
-    
     id = sys.argv[1]
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.169', 50001))
+    s.connect(('127.0.0.1', 50001))
     msgid = "Player " + id
     s.send(msgid.encode())
 
 
     threading.Thread(target=worker, args=(s, id, )).start()
 
-    width = screen.get_width() 
-    height = screen.get_height()
+    screen_info = pygame.display.Info()
+    width = screen_info.current_w
+    height = screen_info.current_h - 50
+    screen = pygame.display.set_mode((width, height))
 
-    button_play = pygame.Rect(width/2.5,height/2.5,120,100)
-    button_refocus = pygame.Rect(width/5,height/5,120,100)
+    font = pygame.font.Font("TT Rounds Neue Trial Black.ttf",200)
+    fontCardList = pygame.font.Font("TT Rounds Neue Trial Regular.ttf",100)
+    fontbuttons = pygame.font.Font("TT Rounds Neue Trial Black.ttf",70)
+
+    button_play = pygame.Rect(width/2-100,height/2-50,200,100)
+    button_refocus = pygame.Rect(width/6,height/6,300,100)
 
     
     run = True
@@ -135,6 +135,7 @@ def main():
             screen.fill((231,84,128))  
             text = font.render("LEVEL "+ str(level+1), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
+            pygame.display.flip()
                 
             pygame.display.flip()
         if state == "WAITING_WELCOME":
@@ -148,29 +149,29 @@ def main():
             screen.fill((15,170,240)) 
             text = font.render("LEVEL "+ str(level), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            cards_text = font.render(str(cards), True, (0, 0, 0))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
             text_width, text_height = cards_text.get_size()
             x = (width - text_width) // 2
             if x < 0:
                 x = 0
-            screen.blit(cards_text, (x,screen.get_rect().centery - 200))
+            screen.blit(cards_text, (x,screen.get_rect().centery + 200))
             pygame.display.flip()
         
         elif state == "WAITING_NEXTLEVEL":
             screen.fill((151,214,242)) 
             text = font.render("LEVEL "+ str(level), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
             text_width, text_height = cards_text.get_size()
             x = (width - text_width) // 2
             if x < 0:
                 x = 0
-            cards_text = font.render(str(cards), True, (0, 0, 0))
-            screen.blit(cards_text, (x,screen.get_rect().centery - 200))
+            screen.blit(cards_text, (x,screen.get_rect().centery + 200))
             pygame.display.flip()
 
         elif state  == "GAME" and len(cards) > 0:
             screen.fill((255,255,255)) 
-            cards_text = font.render(str(cards), True, (0, 0, 0))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
             text_width, text_height = cards_text.get_size()
             x = (width - text_width) // 2
             if x < 0:
@@ -180,44 +181,64 @@ def main():
             
             pygame.draw.rect(screen,(51,160,44) , button_refocus)
             
-            text = smallfont.render('refocus' , True , (0,0,0) )
-            screen.blit(text , (width/5+10,height/5+30)) 
+            text = fontbuttons.render('refocus' , True , (0,0,0) )
+            screen.blit(text , (width/6+20,height/6)) 
 
-            pygame.draw.rect(screen,(51,160,44) , button_play)
+            pygame.draw.rect(screen,(255, 193, 7) , button_play)
 
-            text = smallfont.render('play' , True , (0,0,0) )
-            screen.blit(text , (width/2.5+30,height/2.5+30)) 
+            text = fontbuttons.render('play' , True , (0,0,0) )
+            screen.blit(text , (width/2-70,height/2-50)) 
             
             pygame.display.flip()
 
         elif state  == "GAME" and len(cards) == 0:
             screen.fill((200,200,200)) 
-            cards_text = font.render(str(cards), True, (0, 0, 0))
-            screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
+            text_width, text_height = cards_text.get_size()
+            x = (width - text_width) // 2
+            if x < 0:
+                x = 0
+            screen.blit(cards_text, (x ,height/1.5))
             pygame.display.flip()
         
         elif state  == "MISTAKE":
             screen.fill((223,28,28)) 
-            cards_text = font.render(str(cards), True, (0, 0, 0))
-            screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
+            text_width, text_height = cards_text.get_size()
+            x = (width - text_width) // 2
+            if x < 0:
+                x = 0
+            screen.blit(cards_text, (x ,height/1.5))
             pygame.display.flip()
         
         elif state  == "WAITING_MISTAKE":
             screen.fill((242,110,110)) 
-            cards_text = font.render(str(cards), True, (0, 0, 0))
-            screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
+            text_width, text_height = cards_text.get_size()
+            x = (width - text_width) // 2
+            if x < 0:
+                x = 0
+            screen.blit(cards_text, (x ,height/1.5))
             pygame.display.flip()
 
         elif state  == "REFOCUS":
             screen.fill((51,160,44)) 
-            cards_text = font.render(str(cards), True, (0, 0, 0))
-            screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
+            text_width, text_height = cards_text.get_size()
+            x = (width - text_width) // 2
+            if x < 0:
+                x = 0
+            screen.blit(cards_text, (x ,height/1.5))
             pygame.display.flip()
 
         elif state  == "WAITING_REFOCUS":
             screen.fill((178,223,138)) 
-            cards_text = font.render(str(cards), True, (0, 0, 0))
-            screen.blit(cards_text, cards_text.get_rect(center = screen.get_rect().center))
+            cards_text = fontCardList.render(str(cards), True, (0, 0, 0))
+            text_width, text_height = cards_text.get_size()
+            x = (width - text_width) // 2
+            if x < 0:
+                x = 0
+            screen.blit(cards_text, (x ,height/1.5))
             pygame.display.flip()
 
 

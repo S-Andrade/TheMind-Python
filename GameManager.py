@@ -265,9 +265,10 @@ def gameManager(server_socket):
     height = screen_info.current_h - 50
     screen = pygame.display.set_mode((width, height))
 
-    font = pygame.font.SysFont("calibri",80)
-    smallfont = pygame.font.SysFont('Corbel',35)
-    sfont = pygame.font.SysFont("calibri",40)
+    font = pygame.font.Font("TT Rounds Neue Trial Black.ttf",200)
+    fontinfo = pygame.font.Font("TT Rounds Neue Trial Regular.ttf",50)
+    fonttoppile = pygame.font.Font("TT Rounds Neue Trial Black.ttf",70)
+    fontinfocards = pygame.font.Font("TT Rounds Neue Trial Black.ttf",80)
 
     image = pygame.image.load("arrow.png").convert_alpha()
     image = pygame.transform.scale(image, (150, 150))
@@ -403,31 +404,75 @@ def gameManager(server_socket):
 
             text = font.render("LEVEL "+ str(level), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            liv = font.render("LIVES: "+ str(lives), True, (0, 0, 0))
+            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
             screen.blit(liv, (10,10))
-            pl0 = sfont.render("Player0: "+ str(len(p0.cards)), True, (0, 0, 0))
-            screen.blit(pl0, (10, height-50))
-            pl1 = sfont.render("Player1: "+ str(len(p1.cards)), True, (0, 0, 0))
-            screen.blit(pl1, (width-200,height-50))
-            r = sfont.render("Player2: "+ str(len(p2.cards)), True, (0, 0, 0))
-            screen.blit(r, (width/2-50, 10))
+            pl0x = 40
+            pl0y = height-100
+            pl0 = fontinfo.render("P0: ", True, (0, 0, 0)) 
+            screen.blit(pl0,(pl0x,pl0y))
+            pl01 = fontinfocards.render(str(len(p0.cards)), True, (0, 0, 0))
+            screen.blit(pl01,(pl0x + pl0.get_width(),pl0y-30))
+            pl02 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl02,(pl0x + pl0.get_width() + pl01.get_width(),pl0y))
+            
+            pl1x = width-350
+            pl1y = height-100
+            pl1 = fontinfo.render("P1: ", True, (0, 0, 0)) 
+            screen.blit(pl1,(pl1x,pl1y))
+            pl11 = fontinfocards.render(str(len(p1.cards)), True, (0, 0, 0))
+            screen.blit(pl11,(pl1x + pl1.get_width(),pl1y-30))
+            pl12 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl12,(pl1x + pl1.get_width() + pl11.get_width(),pl1y))
+
+            pl2x = width/2-150
+            pl2y = 40
+            pl2 = fontinfo.render("P2: ", True, (0, 0, 0)) 
+            screen.blit(pl2,(pl2x,pl2y))
+            pl21 = fontinfocards.render(str(len(p2.cards)), True, (0, 0, 0))
+            screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
+            pl22 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+            
             pygame.display.flip()
+
         
         elif gameState == "NEXTLEVEL":
             
             screen.fill((15,170,240))
 
-            text = font.render("LEVEL: "+ str(level), True, (0, 0, 0))
+            text = font.render("LEVEL "+ str(level), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            liv = font.render("LIVES: "+ str(lives), True, (0, 0, 0))
+            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
             screen.blit(liv, (10,10))
-            pl0 = sfont.render("Player0: "+ str(len(p0.cards)), True, (0, 0, 0))
-            screen.blit(pl0, (10, height-50))
-            pl1 = sfont.render("Player1: "+ str(len(p1.cards)), True, (0, 0, 0))
-            screen.blit(pl1, (width-200,height-50))
-            r = sfont.render("Player2: "+ str(len(p2.cards)), True, (0, 0, 0))
-            screen.blit(r, (width/2-50, 10))
+            pl0x = 40
+            pl0y = height-100
+            pl0 = fontinfo.render("P0: ", True, (0, 0, 0)) 
+            screen.blit(pl0,(pl0x,pl0y))
+            pl01 = fontinfocards.render(str(len(p0.cards)), True, (0, 0, 0))
+            screen.blit(pl01,(pl0x + pl0.get_width(),pl0y-30))
+            pl02 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl02,(pl0x + pl0.get_width() + pl01.get_width(),pl0y))
+            
+            pl1x = width-350
+            pl1y = height-100
+            pl1 = fontinfo.render("P1: ", True, (0, 0, 0)) 
+            screen.blit(pl1,(pl1x,pl1y))
+            pl11 = fontinfocards.render(str(len(p1.cards)), True, (0, 0, 0))
+            screen.blit(pl11,(pl1x + pl1.get_width(),pl1y-30))
+            pl12 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl12,(pl1x + pl1.get_width() + pl11.get_width(),pl1y))
+
+            pl2x = width/2-150
+            pl2y = 40
+            pl2 = fontinfo.render("P2: ", True, (0, 0, 0)) 
+            screen.blit(pl2,(pl2x,pl2y))
+            pl21 = fontinfocards.render(str(len(p2.cards)), True, (0, 0, 0))
+            screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
+            pl22 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+            
             pygame.display.flip()
+
         
         elif gameState == "GAME":
             if p0.state == "MISTAKE" or p1.state == "MISTAKE" or p1.state == "MISTAKE":
@@ -435,18 +480,42 @@ def gameManager(server_socket):
             else:
                 screen.fill((255, 255, 255))
             
+            pygame.draw.rect(screen,(255, 193, 7) , (width/2-175,height/2-150,350,300))
             text = font.render(str(topPile), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            liv = font.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (10,10))
-            lev = font.render("LEVEL: "+ str(level), True, (0, 0, 0))
+            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
             screen.blit(lev, (10,80))
-            pl0 = sfont.render("Player0: "+ str(len(p0.cards)), True, (0, 0, 0))
-            screen.blit(pl0, (10, height-50))
-            pl1 = sfont.render("Player1: "+ str(len(p1.cards)), True, (0, 0, 0))
-            screen.blit(pl1, (width-200,height-50))
-            r = sfont.render("Player2: "+ str(len(p2.cards)), True, (0, 0, 0))
-            screen.blit(r, (width/2-50, 10))
+            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
+            screen.blit(liv, (10,10))
+            pl0x = 40
+            pl0y = height-100
+            pl0 = fontinfo.render("P0: ", True, (0, 0, 0)) 
+            screen.blit(pl0,(pl0x,pl0y))
+            pl01 = fontinfocards.render(str(len(p0.cards)), True, (0, 0, 0))
+            screen.blit(pl01,(pl0x + pl0.get_width(),pl0y-30))
+            pl02 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl02,(pl0x + pl0.get_width() + pl01.get_width(),pl0y))
+            
+            pl1x = width-350
+            pl1y = height-100
+            pl1 = fontinfo.render("P1: ", True, (0, 0, 0)) 
+            screen.blit(pl1,(pl1x,pl1y))
+            pl11 = fontinfocards.render(str(len(p1.cards)), True, (0, 0, 0))
+            screen.blit(pl11,(pl1x + pl1.get_width(),pl1y-30))
+            pl12 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl12,(pl1x + pl1.get_width() + pl11.get_width(),pl1y))
+
+            pl2x = width/2-150
+            pl2y = 40
+            pl2 = fontinfo.render("P2: ", True, (0, 0, 0)) 
+            screen.blit(pl2,(pl2x,pl2y))
+            pl21 = fontinfocards.render(str(len(p2.cards)), True, (0, 0, 0))
+            screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
+            pl22 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+            
+            pygame.display.flip()
+
 
             
 
@@ -475,20 +544,42 @@ def gameManager(server_socket):
                                 
         elif gameState == "REFOCUS":
             screen.fill((51,160,44)) 
+            pygame.draw.rect(screen,(255, 193, 7) , (width/2-175,height/2-150,350,300))
             text = font.render(str(topPile), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            liv = font.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (10,10))
-            lev = font.render("LEVEL: "+ str(level), True, (0, 0, 0))
+            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
             screen.blit(lev, (10,80))
-            pl0 = sfont.render("Player0: "+ str(len(p0.cards)), True, (0, 0, 0))
-            screen.blit(pl0, (10, height-50))
-            pl1 = sfont.render("Player1: "+ str(len(p1.cards)), True, (0, 0, 0))
-            screen.blit(pl1, (width-200,height-50))
-            r = sfont.render("Player2: "+ str(len(p2.cards)), True, (0, 0, 0))
-            screen.blit(r, (width/2-50, 10))
-            pygame.display.flip()
+            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
+            screen.blit(liv, (10,10))
+            pl0x = 40
+            pl0y = height-100
+            pl0 = fontinfo.render("P0: ", True, (0, 0, 0)) 
+            screen.blit(pl0,(pl0x,pl0y))
+            pl01 = fontinfocards.render(str(len(p0.cards)), True, (0, 0, 0))
+            screen.blit(pl01,(pl0x + pl0.get_width(),pl0y-30))
+            pl02 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl02,(pl0x + pl0.get_width() + pl01.get_width(),pl0y))
+            
+            pl1x = width-350
+            pl1y = height-100
+            pl1 = fontinfo.render("P1: ", True, (0, 0, 0)) 
+            screen.blit(pl1,(pl1x,pl1y))
+            pl11 = fontinfocards.render(str(len(p1.cards)), True, (0, 0, 0))
+            screen.blit(pl11,(pl1x + pl1.get_width(),pl1y-30))
+            pl12 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl12,(pl1x + pl1.get_width() + pl11.get_width(),pl1y))
 
+            pl2x = width/2-150
+            pl2y = 40
+            pl2 = fontinfo.render("P2: ", True, (0, 0, 0)) 
+            screen.blit(pl2,(pl2x,pl2y))
+            pl21 = fontinfocards.render(str(len(p2.cards)), True, (0, 0, 0))
+            screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
+            pl22 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+            
+            pygame.display.flip()
+            
         elif gameState == "WIN":
             time.sleep(1)
             screen.fill((255,140,0)) 
@@ -645,7 +736,7 @@ def main():
     card_played = 0
     player_played = []
 
-    host = '192.168.1.169'
+    host = '127.0.0.1'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
