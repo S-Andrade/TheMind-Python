@@ -157,7 +157,7 @@ def robot():
             
             if  targetPlayer != "":
 
-                if time.time() - timeGaze >= nextTimeToLook:
+                if time.time() - timeGaze >= nextTimeToLook + gazeTime:
                     targetPlayer = ""
                     #print(message)
                 
@@ -297,7 +297,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.100', 50001))
+    s.connect(('127.0.0.1', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 

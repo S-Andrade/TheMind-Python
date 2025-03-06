@@ -219,7 +219,7 @@ def main():
 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.100', 50001))
+    s.connect(('192.168.0.102', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -236,7 +236,7 @@ def main():
 
     
     while True:
-        #print(state)
+        print(state)
         if state == "WELCOME":
             #print("welcome")
             #     

@@ -514,10 +514,6 @@ def gameManager(server_socket):
             pl22 = fontinfo.render(" cards", True, (0, 0, 0))
             screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
             
-            pygame.display.flip()
-
-
-            
 
             if len(player_played) > 0 and time.time() - player_played[1] < 2:
             
