@@ -5,6 +5,9 @@ def main():
 
     level = 8
     lives = 3
+    p0 = "GAME"
+    p1 = "GAME"
+    p2 = "GAME"
     pygame.init() 
 
     # Get screen info
@@ -17,6 +20,9 @@ def main():
     fontinfo = pygame.font.Font("..\\tt_rounds_neue\TT Rounds Neue Trial Regular.ttf",50)
     fonttoppile = pygame.font.Font("..\\tt_rounds_neue\TT Rounds Neue Trial Black.ttf",70)
     fontinfocards = pygame.font.Font("..\\tt_rounds_neue\TT Rounds Neue Trial Black.ttf",80)
+
+    image_hand = pygame.image.load("..\\..\\hand.png").convert_alpha()
+    image_hand = pygame.transform.scale(image_hand, (150, 150))
    
     run = True
 
@@ -57,6 +63,24 @@ def main():
         screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
         pl22 = fontinfo.render(" cards", True, (0, 0, 0))
         screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+
+        if p0 == "GAME":
+            angle = -45
+            rotated_image = pygame.transform.rotate(image_hand, angle)
+            rect = rotated_image.get_rect(center=(width/4, height*(3/4)))
+            screen.blit(rotated_image, rect.topleft)
+
+        if p1 == "GAME":
+            angle = 45
+            rotated_image = pygame.transform.rotate(image_hand, angle)
+            rect = rotated_image.get_rect(center=(width*(3/4), height*(3/4)))
+            screen.blit(rotated_image, rect.topleft)
+            
+        if p2 == "GAME":
+            angle = -180
+            rotated_image = pygame.transform.rotate(image_hand, angle)
+            rect = rotated_image.get_rect(center=(width/2, height/4))
+            screen.blit(rotated_image, rect.topleft)
         
         pygame.display.flip()
 
