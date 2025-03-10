@@ -3,11 +3,61 @@ import time
 import socket
 import sys
 import random
+import numpy as np
+import os
+import logging
 
-global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+def setup_logger(process_name):
+
+    directory = "migas"
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # Define the directory and log file path
+    log_dir = os.path.join("logs", directory)
+    log_file = os.path.join(log_dir, process_name + ".log")
+    
+    # Ensure the directory exists
+    os.makedirs(log_dir, exist_ok=True)
+    
+    # Create a logger
+    logger = logging.getLogger(process_name)
+    logger.setLevel(logging.INFO)  # Set the log level
+
+    # Prevent duplicate handlers if logger already exists
+    if not logger.handlers:
+        # Create a file handler for each process based on process name
+        file_handler = logging.FileHandler(log_file, mode='w')
+        file_handler.setLevel(logging.INFO)
+
+        # Create a formatter and add it to the handler
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(formatter)
+
+        # Add the handler to the logger
+        logger.addHandler(file_handler)
+    
+    return logger
+
+global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget
+
+def generate_gaze_time(mu, sigma, tau):
+    # Generate a random value from the Gaussian distribution
+    gaussian_sample = np.random.normal(mu, sigma)
+    
+    # Generate a random value from the Exponential distribution
+    exponential_sample = np.random.exponential(tau)
+    
+    # Sum the two values to get the ex-Gaussian sample
+    gaze_time = gaussian_sample + exponential_sample
+    
+    return gaze_time
 
 def robot():
     global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+    
+    logger = setup_logger(f"Proactive_robot")
     # Cria um socket TCP
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -36,6 +86,7 @@ def robot():
             client_socket.sendall(message.encode('utf-8'))
             print(message)
             animation = ""
+            logger.info(f"-animation: {animation}")
         
         if speak != "":
             message = f'Speak,player2,{speak}'
@@ -43,22 +94,7 @@ def robot():
             #print(message)
             speak = ""
             time.sleep(0.5)
-
-        if playcard != "":
-            message = f'GazeAtTarget,{playcard}'
-            client_socket.sendall(message.encode('utf-8'))
-            print(">" + playcard)
-            time.sleep(1)
-            print(">>" + playcard)
-            #print(">>>>>>" + playcard)
-            if playcard == "player0":
-                player0 += 1
-            
-            if playcard == "player1":
-                player1 += 1
-
-            playcard = ""
-
+            logger.info(f"-speak: {speak}")
 
         if gazetarget == "front":
 
@@ -66,11 +102,12 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = float(random.randrange(900,1400)/100)
+                nextTimeToLook = generate_gaze_time(313.22, 164.98,801.74)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
                 #print("r>" + message)
+                logger.info(f"currentGazeTargetFront: {currentGazeTargetFront} -- nextTimeToLook: {nextTimeToLook}")
 
             elif currentGazeTargetFront != "":
                 if time.time() - timeGaze >= nextTimeToLook:
@@ -80,17 +117,18 @@ def robot():
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
                         player0 += 1
-                    nextTimeToLook = float(random.randrange(900,1400)/100)
+                    nextTimeToLook = generate_gaze_time(313.22, 164.98,801.74)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
+                    logger.info(f"currentGazeTargetFront: {currentGazeTargetFront} -- nextTimeToLook: {nextTimeToLook}")
                     #print(message)
 
 
         if gazetarget == "tablet":
             message = f'GazeAtTarget,tablet'
             client_socket.sendall(message.encode('utf-8'))
-           
+            logger.info(f"gazeAt: tablet")
 
         if gazetarget == "condition":
 
@@ -117,13 +155,14 @@ def robot():
                     if targetPlayer == "player1":
                         player1 += 1
                 
-                gazeTime = float(random.randrange(50,300)/100)
-                nextTimeToLook = float(random.randrange(900,1400)/100) + gazeTime
+                gazeTime = generate_gaze_time(313.22, 164.98,801.74)
+                nextTimeToLook = generate_gaze_time(146.18, 2*120.72, 2*993.70) + gazeTime
                 timeGaze = time.time()
                 endGaze = False
                 message = f'GazeAtTarget,{targetPlayer}'
                 client_socket.sendall(message.encode('utf-8'))
                 #print("r>" + message)
+                logger.info(f"targetPlayer: {targetPlayer} -- gazeTime: {gazeTime} -- nextTimeToLook: {nextTimeToLook}")
 
             
             if  targetPlayer != "":
@@ -131,6 +170,7 @@ def robot():
                 if time.time() - timeGaze >= nextTimeToLook + gazeTime:
                     targetPlayer = ""
                     #print(message)
+                    logger.info(f"targetPlayer: {targetPlayer}")
                 
                 elif time.time() - timeGaze >= gazeTime and not endGaze:
                     message = f'GazeAtTarget,mainscreen'
@@ -138,10 +178,13 @@ def robot():
                     #print("mm>"+message)
                     endGaze = True
 
+                    logger.info(f"targetPlayer: mainscreen")
+
 # Function to be executed in the parallel process
 def worker(s, id):
     global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
   
+    logger = setup_logger("worker_Proactive")
     while True:
         msg = s.recv(1024)
         msg = msg.decode()
@@ -155,6 +198,7 @@ def worker(s, id):
             level = len(list_cards[id])
             state = "NEXTLEVEL"
             timetoplay = cards[0]
+            logger.info(f"state: {state} -- timetoplay: {timetoplay} -- cards: {cards}")
             #print(timetoplay)
         
         elif "GAMEOVER" in msg:
@@ -169,21 +213,23 @@ def worker(s, id):
             time.sleep(1)
             speak = "Another game?"
             state = "GAMEOVER"
-
+            logger.info(f"state: {state} -- gazetarget: {gazetarget} -- speak: {speak}")
             
         
         elif "GAME" in msg:
             state = "GAME"
             starttime = time.time()
+            logger.info(f"state: {state} -- timerestart")
         
         elif "WELCOME" in msg:
             state = "WELCOME"
+            logger.info(f"state: {state}")
 
         elif "CARD" in msg:
             msgclean = msg[5:].split(",")
             player = msgclean[0]
             card = int(msgclean[1])
-
+            logger.info(f"player: {player} - card: {card}")
             if len(cards) > 0:
                     timetoplay = cards[0] - card
                     starttime = time.time()
@@ -199,12 +245,14 @@ def worker(s, id):
                             speak = "My turn!"
                             gazetarget = "front"
                         #print(timetoplay)
+                        logger.info(f"gazetarget: {gazetarget} -- speak: {speak} -- cards0: {cards0} -- cards1: {cards1}")
         
         elif "LAST" in msg:
                 timetoplay = 2
                 starttime = time.time()
                 print(timetoplay)
                 last = True
+                logger.info(f"LAST -- timetoplay: {timetoplay}")
         
         elif len(cards) == 0:
             if "MISTAKE" in msg:
@@ -214,6 +262,8 @@ def worker(s, id):
                 cards0 = [x for x in cards0 if x > mistake]
                 cards1 = [x for x in cards1 if x > mistake]
 
+                logger.info(f"state: {state} -- mistake: {mistake} -- cards: {cards} -- cards0: {cards0} -- cards1: {cards1}")
+
         elif len(cards) > 0:
             if "MISTAKE" in msg:
                 state = "MISTAKE"
@@ -221,26 +271,29 @@ def worker(s, id):
                 cards = [x for x in cards if x > mistake]
                 cards0 = [x for x in cards0 if x > mistake]
                 cards1 = [x for x in cards1 if x > mistake]
+                logger.info(f"state: {state} -- mistake: {mistake} -- cards: {cards} -- cards0: {cards0} -- cards1: {cards1}")
 
                 if "LAST" in msg:
                     timetoplay = 2
                     starttime = time.time()
                     print(timetoplay)
                     last = True
+                    logger.info(f"timetoplay: {timetoplay}")
                 else:
                     if len(cards) > 0:
                         timetoplay = cards[0] - mistake
                         starttime = time.time()
-                        print(timetoplay)
+                        logger.info(f"timetoplay: {timetoplay}")
+
+                
 
             if "REFOCUS" in msg:
                 state = "REFOCUS"
-                
-        
+                logger.info(f"state: {state}")
             
 def main():
     global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
-
+    logger = setup_logger("Proactive")
     cards = [] 
     cards0 = []
     cards1 = []
@@ -264,8 +317,13 @@ def main():
     msgid = "Player 2" 
     s.send(msgid.encode())
 
-    threading.Thread(target=worker, args=(s, 2, )).start()
+    print("conetion")
+    logger.info("Connected to GameManager")
 
+
+
+    threading.Thread(target=worker, args=(s, 2, )).start()
+    logger.info("Start worker")
 
     threading.Thread(target=robot).start()
 
@@ -283,12 +341,15 @@ def main():
                 hi = True
 
                 gazetarget = "front"
+                logger.info(f"speak: {speak} -- gazetarget: {gazetarget}")
 
             s.send("WELCOME".encode())
             state = "WAITING_WELCOME"
+            logger.info(f"send: WELCOME -- state: {state}")
         
         elif state == "WAITING_WELCOME":
             gazetarget = "condition"
+            logger.info(f"gazetarget: {gazetarget}")
             
         elif state == "NEXTLEVEL":
             #print("readyplay")
@@ -297,39 +358,43 @@ def main():
                 speak = random.choice(falas)
                 gazetarget = "front"
                 animation = "joy1"
+                logger.info(f"speak: {speak} -- gazetarget: {gazetarget}")
             else:
                 gazetarget = "condition"
+                logger.info(f" gazetarget: {gazetarget}")
 
             s.send("READYTOPLAY".encode())
             state = "WAITING_NEXTLEVEL"
+            logger.info(f"send: READYTOPLAY -- state: {state}")
 
         elif state == "WAITING_NEXTLEVEL":
             gazetarget = "condition"
+            logger.info(f"gazetarget: {gazetarget}")
 
         elif state  == "GAME" and len(cards) > 0:
             
             gazetarget = "condition"
-            
+            logger.info(f"gazetarget: {gazetarget}")
+
             if time.time() - starttime >= timetoplay:
                 tosend = "PLAY " +  str(cards[0])
                 #print(tosend)
                 s.send(tosend.encode())
                 lastplay = cards[0]
                 cards = cards[1:]
+                logger.info(f"send: {tosend} -- card: {lastplay} -- cards: {cards}")
+
                 if len(cards) > 0:
                     timetoplay = cards[0] - lastplay
                     starttime = time.time()
                     #print(timetoplay)
+                    logger.info(f"timetoplay: {timetoplay}")
                 if last:
                     speak = f"I played the last card. It was a {lastplay}"
                     last = False
-
-            elif time.time() - starttime >= timetoplay-1:
-                gazetarget = "tablet"
-
-            else:
-                gazetarget = "condition"
-
+                    logger.info(f"speak: {speak}")
+                
+        
         elif state == "MISTAKE":
             #print("mistake")
             falas = ["oh no!", "We lost a life!"]
@@ -338,21 +403,25 @@ def main():
 
             s.send("MISTAKE".encode())
             state = "WAITING_MISTAKE"
+            logger.info(f"state: {state} -- gazetarget: {gazetarget} -- speak: {speak} -- send: MISTAKE")
         
         elif state == "WAITING_MISTAKE":
             gazetarget = "condition"
+            logger.info(f"gazetarget: {gazetarget}")
         
         elif state == "REFOCUS":
             gazetarget = "condition"
-
             s.send("REFOCUS".encode())
             state = "WAITING_REFOCUS"
+            logger.info(f"state: {state} -- gazetarget: {gazetarget} -- send: REFOCUS")
         
         elif state == "WAITING_REFOCUS":
             gazetarget = "condition"
+            logger.info(f"gazetarget: {gazetarget}")
 
         elif state == "GAMEOVER":
             s.send("GAMEOVER".encode())
+            logger.info(f"send GAMEOVER")
             state = "WAITING_GAMEOVER"
             cards = []
             level = 0
@@ -360,6 +429,7 @@ def main():
             mistake = 0
             starttime = 0
             timetoplay = 0
+            logger.info(f"state: {state} -- level: {level} -- cards: {cards}")
 
 if __name__ == "__main__":
     main()

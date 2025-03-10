@@ -10,6 +10,7 @@ import os
 import sys
 from playsound import playsound
 import threading
+import os
 
 mutex = threading.Lock()
 
@@ -17,8 +18,14 @@ mutex = threading.Lock()
 #playerState: NEXTLEVEL, READYTOPLAY
 
 def setup_logger(process_name):
+
+    directory = "migas"
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     # Define the directory and log file path
-    log_dir = os.path.join("logs", "debug")
+    log_dir = os.path.join("logs", directory)
     log_file = os.path.join(log_dir, process_name + ".log")
     
     # Ensure the directory exists
@@ -248,13 +255,11 @@ def getCards(Level):
 
     return hands
 
-global clients, p0, p1, p2, gameState, card_played, lives, topPile, level, player_played 
-
+global clients, p0, p1, p2, gameState, card_played, lives, topPile, level, player_played, card_pile 
 
 def gameManager(server_socket):
-    global clients, p0, p1, p2, gameState, card_played, lives, topPile, level, player_played 
+    global clients, p0, p1, p2, gameState, card_played, lives, topPile, level, player_played, card_pile 
     logger = setup_logger("gameManager")
-    logger.info("START")
 
     ultima = False
     last = False
@@ -274,6 +279,13 @@ def gameManager(server_socket):
     image = pygame.image.load("arrow.png").convert_alpha()
     image = pygame.transform.scale(image, (150, 150))
 
+    image_hand = pygame.image.load("hand.png").convert_alpha()
+    image_hand = pygame.transform.scale(image_hand, (150, 150))
+   
+
+    pygame.mixer.init() 
+    sound = pygame.mixer.Sound("card-sound.mp3")
+    
     win_time = None
     ultima_time = None
    
@@ -291,7 +303,7 @@ def gameManager(server_socket):
                         topPile = 0
                         gameState = "WELCOME"
                         level = 1 
-                        lives = 3
+                        lives = 5
                         p0.state = "WELCOME"
                         p0.cards =  []
                         p1.state = "WELCOME"
@@ -299,47 +311,122 @@ def gameManager(server_socket):
                         p2.state = "WELCOME"
                         p2.cards = []
 
+                    logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
+
                     tosend = "WELCOME"
                     broadcast(clients, tosend.encode())
-                    logger.info("broadcast -- WELCOME")
+                    logger.info("broadcast: WELCOME")
 
         #p0.print_player()
         #p1.print_player()
         #p2.print_player()
 
-        print(p0.print_player() + " " + p1.print_player() + " " + p2.print_player())
+        print(gameState+ " " + p0.print_player() + " " + p1.print_player() + " " + p2.print_player())
 
         if len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 1:
 
             if not last:
                 logger.info("only player2 as cards")
                 broadcast(clients, "LAST".encode())
-                logger.info("broadcast -- LAST")
+                logger.info("broadcast: LAST")
                 last = True
         
         elif gameState == "WELCOME" and  p0.state == "NEXTLEVEL" and  p1.state == "NEXTLEVEL" and  p2.state == "NEXTLEVEL":
             with mutex:
                 gameState = "NEXTLEVEL"
-                logger.info("NEXTLEVEL")
                 last = False
                 cards_p0, cards_p1, cards_p2 = getCards(level)
                 p0.cards = cards_p0
                 p1.cards = cards_p1
                 p2.cards = cards_p2
                 cards = [cards_p0, cards_p1, cards_p2]
+            
+            logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
             tosend = "NEXTLEVEL " + str(cards)
             broadcast(clients, tosend.encode())
-            logger.info(f"broadcast -- {tosend}")
+            logger.info(f"broadcast: {tosend}")
 
         elif gameState == "NEXTLEVEL" and  p0.state == "GAME" and  p1.state == "GAME" and  p2.state == "GAME":
             gameState = "GAME"
-            logger.info("GAME")
+            logger.info("state: GAME")
             broadcast(clients, "GAME".encode())
-            logger.info("broadcast -- GAME")
+            logger.info("broadcast: GAME")
+
+        elif gameState == "GAME" and card_pile != []:
+            with mutex:
+                card_played = card_pile[0][0]
+                print(card_pile)
+                print(str(p0.cards) + " " + str(p1.cards) + " " + str(p2.cards))
+                topPile = card_played
+                id = card_pile[0][1]
+                player_played = [card_pile[0][1] , card_pile[0][2]] 
+                card_pile.pop(0)
+            logger.info(f"PLAY -- palyer: {id} -- card: {card_played}")
+            #playsound("card-sound.mp3")
+            sound.play()
+
+
+            if (len(p0.cards) == 0 or card_played <= p0.cards[0]) and (len(p1.cards) == 0 or card_played <= p1.cards[0]) and (len(p2.cards) == 0 or card_played <= p2.cards[0]):
+                
+                if id == "0":
+                    with mutex:
+                        p0.cards = p0.cards[1:]
+                if id == "1":
+                    with mutex:
+                        p1.cards = p1.cards[1:]
+                if id == "2":
+                    with mutex:
+                        p2.cards = p2.cards[1:]
+
+                logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
+                sendit = f"CARD {id},{str(card_played)}"
+                broadcast(clients, sendit.encode())
+                logger.info(f"broadcast: {sendit}")
+                
+            else:
+                with mutex:
+                    lives -= 1
+                logger.info(f'lives: {lives}')
+                
+                if lives == 0:
+                    with mutex:
+                        gameState = "GAMEOVER"
+                    logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
+                    broadcast(clients, "GAMEOVER".encode())
+                    logger.info(f"broadcast: GAMEOVER")
+                else:
+                    
+                    if id == "0":
+                        with mutex:
+                            p0.cards = [x for x in p0.cards if x > topPile]
+                            p1.cards = [x for x in p1.cards if x > topPile]
+                            p2.cards = [x for x in p2.cards if x > topPile]
+                            p0.state = "MISTAKE"
+                            gameState = "MISTAKE"
+                    if id == "1":
+                        with mutex:
+                            p0.cards = [x for x in p0.cards if x > topPile]
+                            p1.cards = [x for x in p1.cards if x > topPile]
+                            p2.cards = [x for x in p2.cards if x > topPile]
+                            p1.state = "MISTAKE"
+                            gameState = "MISTAKE"
+                    if id == "2":
+                        with mutex:
+                            p0.cards = [x for x in p0.cards if x > topPile]
+                            p1.cards = [x for x in p1.cards if x > topPile]
+                            p2.cards = [x for x in p2.cards if x > topPile]
+                            p2.state = "MISTAKE"
+                            gameState = "MISTAKE"
+
+                    logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
+                    sendit = "MISTAKE " + str(card_played)
+                    broadcast(clients, sendit.encode())
+                    logger.info(f"broadcast: {sendit}")
 
         elif gameState == "GAME" and  len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 0 and ultima == False:
             ultima_time = time.time()
             ultima = True
+            logger.info(f"Last card was played")
 
         elif gameState == "GAME" and  len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 0 and time.time() - ultima_time >= 2:
             level += 1
@@ -347,10 +434,11 @@ def gameManager(server_socket):
 
             time.sleep(2)
 
-            if level == 5:
+            if level == 10:
                 with mutex:
                     gameState = "WIN"
                 win_time = time.time()
+                logger.info("state: WIN")
                 
             else:
                 with mutex:
@@ -361,31 +449,34 @@ def gameManager(server_socket):
                     p2.state = "WELCOME"
                     logger.info("WELCOME")
                     cards = [cards_p0, cards_p1, cards_p2]
-                logger.info(f"cards: {cards}")
+                logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
                 tosend = "WELCOME " + str(cards)
                 broadcast(clients, tosend.encode())
                 logger.info(f"broadcast -- {tosend}")
             
             ultima = False
 
-        elif gameState == "GAME" and  (len(p0.cards) == 0 or p0.state == "MISTAKE") and  (len(p1.cards) == 0 or p1.state == "MISTAKE") and  (len(p2.cards) == 0 or p2.state == "MISTAKE"):
+        elif gameState == "MISTAKE" and  (len(p0.cards) == 0 or p0.state == "MISTAKE") and  (len(p1.cards) == 0 or p1.state == "MISTAKE") and  (len(p2.cards) == 0 or p2.state == "MISTAKE"):
             with mutex:
-                p0.cards = [x for x in p0.cards if x >= topPile]
-                p1.cards = [x for x in p1.cards if x >= topPile]
-                p2.cards = [x for x in p2.cards if x >= topPile]
+                #p0.cards = [x for x in p0.cards if x >= topPile]
+                #p1.cards = [x for x in p1.cards if x >= topPile]
+                #p2.cards = [x for x in p2.cards if x >= topPile]
                 gameState = "GAME"
                 p0.state = "GAME"
                 p1.state = "GAME"
                 p2.state = "GAME"
             print("mistake")
-            logger.info("end MISTAKE")
+            logger.info("state: GAME")
             broadcast(clients, "GAME".encode())
-            logger.info("broadcast -- GAME")
+            logger.info("broadcast: GAME")
 
-        elif gameState == "GAME" and (p0.state == "REFOCUS" or p1.state == "REFOCUS" or p1.state == "REFOCUS"):
+        elif gameState == "GAME" and (p0.state == "REFOCUS" or p1.state == "REFOCUS" or p2.state == "REFOCUS"):
             with mutex:
                 gameState = "REFOCUS"
-            logger.info("REFOCUS")
+                p0.state = "GAME"
+                p1.state = "GAME"
+                p2.state = "GAME"
+            logger.info("state: REFOCUS")
 
         elif gameState == "REFOCUS" and  (len(p0.cards) == 0 or p0.state == "REFOCUS") and  (len(p1.cards) == 0 or p1.state == "REFOCUS") and  (len(p2.cards) == 0 or p2.state == "REFOCUS"):
             with mutex:
@@ -393,9 +484,9 @@ def gameManager(server_socket):
                 p0.state = "GAME"
                 p1.state = "GAME"
                 p2.state = "GAME"
-            logger.info("end REFOCUS")
+            logger.info(f"state: GAME")
             broadcast(clients, "GAME".encode())
-            logger.info("broadcast -- GAME")
+            logger.info("broadcast: GAME")
 
         elif gameState == "WIN":
 
@@ -404,7 +495,7 @@ def gameManager(server_socket):
                     gameState = "GAMEOVER"
                 logger.info("GAMEOVER")
                 broadcast(clients, "GAMEOVER".encode())
-                logger.info("broadcast -- GAMEOVER")
+                logger.info("broadcast: GAMEOVER")
 
         if gameState == "WELCOME":
 
@@ -478,15 +569,94 @@ def gameManager(server_socket):
             screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
             pl22 = fontinfo.render(" cards", True, (0, 0, 0))
             screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+
+            if p0.state == "GAME":
+                angle = -45
+                rotated_image = pygame.transform.rotate(image_hand, angle)
+                rect = rotated_image.get_rect(center=(width/4, height*(3/4)))
+                screen.blit(rotated_image, rect.topleft)
+
+            if p1.state == "GAME":
+                angle = 45
+                rotated_image = pygame.transform.rotate(image_hand, angle)
+                rect = rotated_image.get_rect(center=(width*(3/4), height*(3/4)))
+                screen.blit(rotated_image, rect.topleft)
+                
+            if p2.state == "GAME":
+                angle = -180
+                rotated_image = pygame.transform.rotate(image_hand, angle)
+                rect = rotated_image.get_rect(center=(width/2, height/4))
+                screen.blit(rotated_image, rect.topleft)
             
             pygame.display.flip()
 
         
         elif gameState == "GAME":
-            if p0.state == "MISTAKE" or p1.state == "MISTAKE" or p1.state == "MISTAKE":
-                screen.fill((223, 28, 28))
-            else:
-                screen.fill((255, 255, 255))
+            
+            screen.fill((255, 255, 255))
+            
+            pygame.draw.rect(screen,(255, 193, 7) , (width/2-175,height/2-150,350,300))
+            text = font.render(str(topPile), True, (0, 0, 0))
+            screen.blit(text, text.get_rect(center = screen.get_rect().center))
+            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
+            screen.blit(lev, (10,80))
+            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
+            screen.blit(liv, (10,10))
+            pl0x = 40
+            pl0y = height-100
+            pl0 = fontinfo.render("P0: ", True, (0, 0, 0)) 
+            screen.blit(pl0,(pl0x,pl0y))
+            pl01 = fontinfocards.render(str(len(p0.cards)), True, (0, 0, 0))
+            screen.blit(pl01,(pl0x + pl0.get_width(),pl0y-30))
+            pl02 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl02,(pl0x + pl0.get_width() + pl01.get_width(),pl0y))
+            
+            pl1x = width-350
+            pl1y = height-100
+            pl1 = fontinfo.render("P1: ", True, (0, 0, 0)) 
+            screen.blit(pl1,(pl1x,pl1y))
+            pl11 = fontinfocards.render(str(len(p1.cards)), True, (0, 0, 0))
+            screen.blit(pl11,(pl1x + pl1.get_width(),pl1y-30))
+            pl12 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl12,(pl1x + pl1.get_width() + pl11.get_width(),pl1y))
+
+            pl2x = width/2-150
+            pl2y = 40
+            pl2 = fontinfo.render("P2: ", True, (0, 0, 0)) 
+            screen.blit(pl2,(pl2x,pl2y))
+            pl21 = fontinfocards.render(str(len(p2.cards)), True, (0, 0, 0))
+            screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
+            pl22 = fontinfo.render(" cards", True, (0, 0, 0))
+            screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+            
+
+            if len(player_played) > 0 and time.time() - player_played[1] < 2:
+            
+                if player_played[0] == "0":
+                    #print(player_played)
+                    angle = 45
+                    rotated_image = pygame.transform.rotate(image, angle)
+                    rect = rotated_image.get_rect(center=(width/4, height*(3/4)))
+                    screen.blit(rotated_image, rect.topleft)
+
+                if player_played[0] == "1":
+                    angle = 135
+                    rotated_image = pygame.transform.rotate(image, angle)
+                    rect = rotated_image.get_rect(center=(width*(3/4), height*(3/4)))
+                    screen.blit(rotated_image, rect.topleft)
+                    
+                if player_played[0] == "2":
+                    angle = -90
+                    rotated_image = pygame.transform.rotate(image, angle)
+                    rect = rotated_image.get_rect(center=(width/2, height/4))
+                    screen.blit(rotated_image, rect.topleft)
+            
+            pygame.display.flip()
+
+        elif gameState == "MISTAKE":
+            
+            screen.fill((223, 28, 28))
+            
             
             pygame.draw.rect(screen,(255, 193, 7) , (width/2-175,height/2-150,350,300))
             text = font.render(str(topPile), True, (0, 0, 0))
@@ -581,6 +751,24 @@ def gameManager(server_socket):
             screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
             pl22 = fontinfo.render(" cards", True, (0, 0, 0))
             screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+
+            if p0.state == "REFOCUS":
+                angle = -45
+                rotated_image = pygame.transform.rotate(image_hand, angle)
+                rect = rotated_image.get_rect(center=(width/4, height*(3/4)))
+                screen.blit(rotated_image, rect.topleft)
+
+            if p1.state == "REFOCUS":
+                angle = 45
+                rotated_image = pygame.transform.rotate(image_hand, angle)
+                rect = rotated_image.get_rect(center=(width*(3/4), height*(3/4)))
+                screen.blit(rotated_image, rect.topleft)
+                
+            if p2.state == "REFOCUS":
+                angle = -180
+                rotated_image = pygame.transform.rotate(image_hand, angle)
+                rect = rotated_image.get_rect(center=(width/2, height/4))
+                screen.blit(rotated_image, rect.topleft)
             
             pygame.display.flip()
             
@@ -598,7 +786,6 @@ def gameManager(server_socket):
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
             pygame.display.flip()
 
-
 def on_new_client(conn, addr, id):
     global clients, p0, p1, p2, gameState, card_played, lives, topPile, level, player_played, card_pile
 
@@ -607,14 +794,11 @@ def on_new_client(conn, addr, id):
     
     clients.append(conn)
 
-    pygame.mixer.init() 
-    sound = pygame.mixer.Sound("card-sound.mp3")
-
     with conn:
         while True:
             msg = conn.recv(1024)
             msg = msg.decode()
-            logger.info(f"{id} -- message -- {msg}")
+            logger.info(f"{id} -- message: {msg}")
             print(str(id) + " " + msg)
             
             if ((id == "0" and p0.state == "WELCOME") or (id == "1" and p1.state == "WELCOME")  or (id == "2" and p2.state == "WELCOME")) and gameState == "WELCOME" and msg == "WELCOME":   
@@ -627,7 +811,7 @@ def on_new_client(conn, addr, id):
                 if id == "2":
                     with mutex:
                         p2.state = "NEXTLEVEL"
-                logger.info(f"{id} -- NEXTLEVEL")
+                logger.info(f"{id} -- state: NEXTLEVEL")
 
             elif ((id == "0" and p0.state == "NEXTLEVEL") or (id == "1" and p1.state == "NEXTLEVEL")  or (id == "2" and p2.state == "NEXTLEVEL")) and gameState == "NEXTLEVEL" and msg == "READYTOPLAY":   
                 if id == "0":
@@ -639,67 +823,18 @@ def on_new_client(conn, addr, id):
                 if id == "2":
                     with mutex:
                         p2.state = "GAME"
-                logger.info(f"{id} -- GAME")
+                logger.info(f"{id} -- state: GAME")
 
             elif ((id == "0" and p0.state == "GAME") or (id == "1" and p1.state == "GAME")  or (id == "2" and p2.state == "GAME")) and gameState == "GAME" and "PLAY" in msg:   
                 with mutex:
-                    card_pile.append(int(msg[5:]))
-                    card_played = int(msg[5:])
-                    topPile = card_played
-                    player_played = [id , time.time()] 
-                logger.info(f"{id} -- PLAY -- {card_played}")
+                    card_pile.append([int(msg[5:]), id , time.time()])
+                    #card_played = int(msg[5:])
+                    #topPile = card_played
+                    #player_played = [id , time.time()] 
+                logger.info(f"{id} -- PLAY: {int(msg[5:])}")
                 #playsound("card-sound.mp3")
-                sound.play()
-
-
-                if (len(p0.cards) == 0 or card_played <= p0.cards[0]) and (len(p1.cards) == 0 or card_played <= p1.cards[0]) and (len(p2.cards) == 0 or card_played <= p2.cards[0]):
-                    
-                    if id == "0":
-                        with mutex:
-                            p0.cards = p0.cards[1:]
-                    if id == "1":
-                        with mutex:
-                            p1.cards = p1.cards[1:]
-                    if id == "2":
-                        with mutex:
-                            p2.cards = p2.cards[1:]
-
-                    sendit = f"CARD {id},{str(card_played)}"
-                    broadcast(clients, sendit.encode())
-                    logger.info(f"{id} -- broadcast -- {sendit}")
-                    
-                else:
-                    with mutex:
-                        lives -= 1
-                    logger.info(f'{id} -- {lives}')
-                    
-                    if lives == 0:
-                        with mutex:
-                            gameState = "GAMEOVER"
-                        logger.info(f"{id} -- GAMEOVER")
-                        broadcast(clients, "GAMEOVER".encode())
-                        logger.info(f"{id} -- broadcast -- GAMEOVER")
-                    else:
-                        
-                        if id == "0":
-                            with mutex:
-                                p0.cards = p0.cards[1:]
-                                p0.state = "MISTAKE"
-                        if id == "1":
-                            with mutex:
-                                p1.cards = p1.cards[1:]
-                                p1.state = "MISTAKE"
-                        if id == "2":
-                            with mutex:
-                                p2.cards = p2.cards[1:]
-                                p2.state = "MISTAKE"
-
-                        logger.info(f"{id} -- MISTAKE")
-                        sendit = "MISTAKE " + str(card_played)
-                        broadcast(clients, sendit.encode())
-                        logger.info(f"{id} -- broadcast -- {sendit}")
             
-            elif ((id == "0" and p0.state == "GAME") or (id == "1" and p1.state == "GAME")  or (id == "2" and p2.state == "GAME")) and gameState == "GAME" and msg == "MISTAKE":
+            elif gameState == "MISTAKE" and msg == "MISTAKE":
                 if id == "0":
                     with mutex:
                         p0.state = "MISTAKE"
@@ -709,7 +844,7 @@ def on_new_client(conn, addr, id):
                 if id == "2":
                     with mutex:
                         p2.state = "MISTAKE"
-                logger.info(f"{id} -- MISTAKE")
+                logger.info(f"{id} -- state: MISTAKE")
 
             elif ((id == "0" and p0.state == "GAME") or (id == "1" and p1.state == "GAME")  or (id == "2" and p2.state == "GAME")) and gameState == "GAME" and msg == "ASK_REFOCUS": 
                 if id == "0":
@@ -721,9 +856,9 @@ def on_new_client(conn, addr, id):
                 if id == "2":
                     with mutex:
                         p2.state = "REFOCUS"
-                logger.info(f"{id} -- REFOCUS")
+                logger.info(f"{id} -- state: REFOCUS")
                 broadcast(clients, "REFOCUS".encode())
-                logger.info(f"{id} -- broadcast -- REFOCUS")
+                logger.info(f"{id} -- broadcast: REFOCUS")
 
             elif ((id == "0" and p0.state == "GAME") or (id == "1" and p1.state == "GAME")  or (id == "2" and p2.state == "GAME")) and gameState == "REFOCUS" and msg == "REFOCUS":
                 if id == "0":
@@ -735,7 +870,7 @@ def on_new_client(conn, addr, id):
                 if id == "2":
                     with mutex:
                         p2.state = "REFOCUS"
-                logger.info(f"{id} -- REFOCUS")
+                logger.info(f"{id} -- state: REFOCUS")
 
             elif ((id == "0" and p0.state == "GAME") or (id == "1" and p1.state == "GAME")  or (id == "2" and p2.state == "GAME")) and gameState == "GAMEOVER" and msg == "GAMEOVER":
                 if id == "0":
@@ -747,8 +882,7 @@ def on_new_client(conn, addr, id):
                 if id == "2":
                     with mutex:
                         p2.state = "GAMEOVER"
-                logger.info(f"{id} -- GAMEOVER")
-
+                logger.info(f"{id} -- state: GAMEOVER")
 
 def main():
     global clients, p0, p1, p2, gameState, card_played, lives, topPile, level, player_played, card_pile
@@ -760,7 +894,7 @@ def main():
         topPile = 0
         gameState = "WELCOME"
         level = 1
-        lives = 3
+        lives = 5
         clients = []
         p0 = Player("0")
         p1 = Player("1")
@@ -769,7 +903,7 @@ def main():
         player_played = []
         card_pile = []
 
-    host = '192.168.1.199'
+    host = '192.168.1.64'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
