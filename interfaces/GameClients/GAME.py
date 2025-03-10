@@ -3,6 +3,7 @@ import pygame
 def main():
     global clients, p0, p1, p2, gameState, card_played, lives, topPile, level, player_played 
 
+    lives = 3
     level = 8
     cards = [1, 3, 25, 30, 40, 50, 67, 77, 80, 99]
     pygame.init() 
@@ -16,6 +17,7 @@ def main():
     font = pygame.font.Font("..\\tt_rounds_neue\TT Rounds Neue Trial Black.ttf",200)
     fontCardList = pygame.font.Font("..\\tt_rounds_neue\TT Rounds Neue Trial Regular.ttf",100)
     fontbuttons = pygame.font.Font("..\\tt_rounds_neue\TT Rounds Neue Trial Black.ttf",70)
+    fontinfo = pygame.font.Font("..\\tt_rounds_neue\TT Rounds Neue Trial Regular.ttf",50)
 
     button_play = pygame.Rect(width/2-100,height/2-50,200,100)
     button_refocus = pygame.Rect(width/6,height/6,300,100)
@@ -46,6 +48,12 @@ def main():
 
         text = fontbuttons.render('play' , True , (0,0,0) )
         screen.blit(text , (width/2-70,height/2-50)) 
+        
+
+        lev = fontinfo.render("LEVEL "+ str(level), True, (0, 0, 0))
+        screen.blit(lev, (width-250,80))
+        liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
+        screen.blit(liv, (width-250,10))
         
         pygame.display.flip()
 
