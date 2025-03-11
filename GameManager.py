@@ -71,7 +71,7 @@ def getCards(Level):
         cards.append(random.randint(1, 20))
         cards.append(random.randint(50, 60))
         cards.append(random.randint(90, 99))
-        random.shuffle(cards)
+        #random.shuffle(cards)
 
     elif Level == 2:
         while len(cards) < 5:
@@ -321,17 +321,17 @@ def gameManager(server_socket):
         #p1.print_player()
         #p2.print_player()
 
-        print(gameState+ " " + p0.print_player() + " " + p1.print_player() + " " + p2.print_player())
+        print(str(card_pile) +  " " + gameState+ " " + p0.print_player() + " " + p1.print_player() + " " + p2.print_player())
 
         if len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 1:
-
+            print("last")
             if not last:
                 logger.info("only player2 as cards")
                 broadcast(clients, "LAST".encode())
                 logger.info("broadcast: LAST")
                 last = True
         
-        elif gameState == "WELCOME" and  p0.state == "NEXTLEVEL" and  p1.state == "NEXTLEVEL" and  p2.state == "NEXTLEVEL":
+        if gameState == "WELCOME" and  p0.state == "NEXTLEVEL" and  p1.state == "NEXTLEVEL" and  p2.state == "NEXTLEVEL":
             with mutex:
                 gameState = "NEXTLEVEL"
                 last = False
@@ -903,7 +903,7 @@ def main():
         player_played = []
         card_pile = []
 
-    host = '192.168.1.64'
+    host = '192.168.1.169'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:

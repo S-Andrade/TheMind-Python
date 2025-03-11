@@ -53,7 +53,7 @@ def generate_gaze_time(mu, sigma, tau):
     # Sum the two values to get the ex-Gaussian sample
     gaze_time = gaussian_sample + exponential_sample
     
-    return gaze_time
+    return gaze_time / 1000
 
 def robot():
     global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
@@ -79,6 +79,8 @@ def robot():
     player0_count = 0
     player1_count = 0
     targetPlayer = ""
+    playcard_time = 0
+    playcard_start = False
 
     while True:
         #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))
@@ -97,8 +99,20 @@ def robot():
             speak = ""
             time.sleep(0.5)
             logger.info(f"-speak: {speak}")
+        
+        if playcard != "":
+            if not playcard_start:
+                message = f'GazeAtTarget,{playcard}'
+                client_socket.sendall(message.encode('utf-8'))
+                playcard_time = time.time()
+                playcard_start = True
+                logger.info(f"look at participant that played a card: {playcard}")
 
-        if gazetarget == "front":
+            if time.time() - playcard_time >= 1:
+                playcard = ""
+                playcard_start = False
+
+        elif gazetarget == "front":
 
             currentGazeTargetCondition = ""
 
@@ -127,12 +141,12 @@ def robot():
                     #print(message)
 
 
-        if gazetarget == "tablet":
+        elif gazetarget == "tablet":
             message = f'GazeAtTarget,tablet'
             client_socket.sendall(message.encode('utf-8'))
             logger.info(f"gazeAt: tablet")
 
-        if gazetarget == "condition":
+        elif gazetarget == "condition":
 
             if  targetPlayer == "":
                 print(str(player0) + "  " + str(player1))
@@ -145,7 +159,7 @@ def robot():
                     targetPlayer = "player1"
                     player1_count += 1
                 
-                elif (player0 == "Player" and player1 == "Player") or (player0 == "Robot" and player1 == "Robot"):
+                elif (player0 == "Shrek" and player1 == "Shrek") or (player0 == "Robot" and player1 == "Robot"):
 
                     if player0 > player1:
                         targetPlayer = "player1"
@@ -163,19 +177,19 @@ def robot():
                             player1_count += 1    
 
                 #JointAttention
-                elif player0 == "Player" and (player1 == "Center" or player1 == "Tablet"):
+                elif player0 == "Shrek" and (player1 == "Center" or player1 == "Tablet"):
                     targetPlayer = "player1"
                     player1_count += 1
                 
-                elif player1 == "Player" and (player0 == "Center" or player0 == "Tablet"):
+                elif player1 == "Shrek" and (player0 == "Center" or player0 == "Tablet"):
                     targetPlayer = "player0"
                     player0_count += 1
 
-                elif player0 == "Robot" and player1 == "Player":
+                elif player0 == "Robot" and player1 == "Shrek":
                     targetPlayer = "player0"
                     player0_count += 1
                 
-                elif player1 == "Robot" and player0 == "Player":
+                elif player1 == "Robot" and player0 == "Shrek":
                     targetPlayer = "player1"
                     player1_count += 1
                 
@@ -352,7 +366,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('127.0.0.1', 50001))
+    s.connect(('192.168.1.169', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -360,12 +374,16 @@ def main():
     logger.info("Connected to GameManager")
 
 
+
+    threading.Thread(target=worker, args=(s, 2, )).start()
+    logger.info("Start worker")
+
     threading.Thread(target=robot).start()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_socket.bind(("127.0.0.1", 50009))
+            server_socket.bind(("192.168.1.169", 50009))
             server_socket.listen()
             print(f'Server listening')
             logger.info("Create Server")
@@ -381,6 +399,8 @@ def main():
             logger.info(f"Start gaze {player_id}")
 
     hi = False
+
+    before_play = False
 
     
     while True:
@@ -425,16 +445,23 @@ def main():
 
         elif state  == "GAME" and len(cards) > 0:
             
-            gazetarget = "condition"
-            logger.info(f"gazetarget: {gazetarget}")
-
+            if not before_play and time.time() - starttime >= timetoplay - 1:
+                gazetarget = "tablet"           
+                logger.info(f"gazetarget: {gazetarget}")
+                before_play = True
+ 
             if time.time() - starttime >= timetoplay:
+                gazetarget = "condition"
+                logger.info(f"gazetarget: {gazetarget}")
+
                 tosend = "PLAY " +  str(cards[0])
                 #print(tosend)
                 s.send(tosend.encode())
                 lastplay = cards[0]
                 cards = cards[1:]
                 logger.info(f"send: {tosend} -- card: {lastplay} -- cards: {cards}")
+
+                before_play = False
 
                 if len(cards) > 0:
                     timetoplay = cards[0] - lastplay
@@ -443,9 +470,13 @@ def main():
                     logger.info(f"timetoplay: {timetoplay}")
                 if last:
                     speak = f"I played the last card. It was a {lastplay}"
+                    gazetarget = "front"
+                    logger.info(f"gazetarget: {gazetarget}")
                     last = False
                     logger.info(f"speak: {speak}")
-                
+            else:
+                gazetarget = "condition"
+                logger.info(f"gazetarget: {gazetarget}")    
         
         elif state == "MISTAKE":
             #print("mistake")

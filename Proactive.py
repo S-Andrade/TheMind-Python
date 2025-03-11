@@ -52,7 +52,7 @@ def generate_gaze_time(mu, sigma, tau):
     # Sum the two values to get the ex-Gaussian sample
     gaze_time = gaussian_sample + exponential_sample
     
-    return gaze_time
+    return gaze_time / 1000
 
 def robot():
     global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
@@ -77,6 +77,8 @@ def robot():
     endGaze = False
     player0 = 0
     player1 = 0
+    playcard_time = 0
+    playcard_start = False
 
     while True:
         #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))
@@ -96,7 +98,21 @@ def robot():
             time.sleep(0.5)
             logger.info(f"-speak: {speak}")
 
-        if gazetarget == "front":
+
+        if playcard != "":
+            if not playcard_start:
+                message = f'GazeAtTarget,{playcard}'
+                client_socket.sendall(message.encode('utf-8'))
+                playcard_time = time.time()
+                playcard_start = True
+                logger.info(f"look at participant that played a card: {playcard}")
+
+            if time.time() - playcard_time >= 1:
+                playcard = ""
+                playcard_start = False
+
+
+        elif gazetarget == "front":
 
             currentGazeTargetCondition = ""
 
@@ -125,12 +141,12 @@ def robot():
                     #print(message)
 
 
-        if gazetarget == "tablet":
+        elif gazetarget == "tablet":
             message = f'GazeAtTarget,tablet'
             client_socket.sendall(message.encode('utf-8'))
             logger.info(f"gazeAt: tablet")
 
-        if gazetarget == "condition":
+        elif gazetarget == "condition":
 
             if  targetPlayer == "":
             
@@ -313,7 +329,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.100', 50001))
+    s.connect(('192.168.1.169', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -329,6 +345,8 @@ def main():
 
 
     hi = False
+
+    before_play = False
 
     
     while True:
@@ -373,16 +391,23 @@ def main():
 
         elif state  == "GAME" and len(cards) > 0:
             
-            gazetarget = "condition"
-            logger.info(f"gazetarget: {gazetarget}")
-
+            if not before_play and time.time() - starttime >= timetoplay - 1:
+                gazetarget = "tablet"           
+                logger.info(f"gazetarget: {gazetarget}")
+                before_play = True
+ 
             if time.time() - starttime >= timetoplay:
+                gazetarget = "condition"
+                logger.info(f"gazetarget: {gazetarget}")
+
                 tosend = "PLAY " +  str(cards[0])
                 #print(tosend)
                 s.send(tosend.encode())
                 lastplay = cards[0]
                 cards = cards[1:]
                 logger.info(f"send: {tosend} -- card: {lastplay} -- cards: {cards}")
+
+                before_play = False
 
                 if len(cards) > 0:
                     timetoplay = cards[0] - lastplay
@@ -391,9 +416,13 @@ def main():
                     logger.info(f"timetoplay: {timetoplay}")
                 if last:
                     speak = f"I played the last card. It was a {lastplay}"
+                    gazetarget = "front"
+                    logger.info(f"gazetarget: {gazetarget}")
                     last = False
                     logger.info(f"speak: {speak}")
-                
+            else:
+                gazetarget = "condition"
+                logger.info(f"gazetarget: {gazetarget}")    
         
         elif state == "MISTAKE":
             #print("mistake")
