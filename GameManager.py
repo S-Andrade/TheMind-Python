@@ -288,6 +288,7 @@ def gameManager(server_socket):
     
     win_time = None
     ultima_time = None
+    mistake_time = None
    
     run = True
 
@@ -403,6 +404,7 @@ def gameManager(server_socket):
                             p2.cards = [x for x in p2.cards if x > topPile]
                             p0.state = "MISTAKE"
                             gameState = "MISTAKE"
+                            mistake_time = time.time()
                     if id == "1":
                         with mutex:
                             p0.cards = [x for x in p0.cards if x > topPile]
@@ -410,6 +412,7 @@ def gameManager(server_socket):
                             p2.cards = [x for x in p2.cards if x > topPile]
                             p1.state = "MISTAKE"
                             gameState = "MISTAKE"
+                            mistake_time = time.time()
                     if id == "2":
                         with mutex:
                             p0.cards = [x for x in p0.cards if x > topPile]
@@ -417,6 +420,7 @@ def gameManager(server_socket):
                             p2.cards = [x for x in p2.cards if x > topPile]
                             p2.state = "MISTAKE"
                             gameState = "MISTAKE"
+                            mistake_time = time.time()
 
                     logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
                     sendit = "MISTAKE " + str(card_played)
@@ -457,18 +461,19 @@ def gameManager(server_socket):
             ultima = False
 
         elif gameState == "MISTAKE" and  (len(p0.cards) == 0 or p0.state == "MISTAKE") and  (len(p1.cards) == 0 or p1.state == "MISTAKE") and  (len(p2.cards) == 0 or p2.state == "MISTAKE"):
-            with mutex:
-                #p0.cards = [x for x in p0.cards if x >= topPile]
-                #p1.cards = [x for x in p1.cards if x >= topPile]
-                #p2.cards = [x for x in p2.cards if x >= topPile]
-                gameState = "GAME"
-                p0.state = "GAME"
-                p1.state = "GAME"
-                p2.state = "GAME"
-            print("mistake")
-            logger.info("state: GAME")
-            broadcast(clients, "GAME".encode())
-            logger.info("broadcast: GAME")
+            if time.time() - mistake_time >= 3:
+                with mutex:
+                    #p0.cards = [x for x in p0.cards if x >= topPile]
+                    #p1.cards = [x for x in p1.cards if x >= topPile]
+                    #p2.cards = [x for x in p2.cards if x >= topPile]
+                    gameState = "GAME"
+                    p0.state = "GAME"
+                    p1.state = "GAME"
+                    p2.state = "GAME"
+                print("mistake")
+                logger.info("state: GAME")
+                broadcast(clients, "GAME".encode())
+                logger.info("broadcast: GAME")
 
         elif gameState == "GAME" and (p0.state == "REFOCUS" or p1.state == "REFOCUS" or p2.state == "REFOCUS"):
             with mutex:
