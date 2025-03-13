@@ -7,6 +7,9 @@ def main():
     lives = 3
     pygame.init() 
     topPile = 80
+    lostp0 = [1,5]
+    lostp1 = [5,6,10,99]
+    lostp2 = [14,22,55]
 
     # Get screen info
     screen_info = pygame.display.Info()
@@ -43,7 +46,9 @@ def main():
         screen.blit(pl01,(pl0x + pl0.get_width(),pl0y-30))
         pl02 = fontinfo.render(" cards", True, (0, 0, 0))
         screen.blit(pl02,(pl0x + pl0.get_width() + pl01.get_width(),pl0y))
-        
+        pl0lost = fontinfo.render(str(lostp0), True, (0, 0, 0)) 
+        screen.blit(pl0lost,(pl0x,pl0y-100))
+
         pl1x = width-350
         pl1y = height-100
         pl1 = fontinfo.render("P1: ", True, (0, 0, 0)) 
@@ -52,6 +57,8 @@ def main():
         screen.blit(pl11,(pl1x + pl1.get_width(),pl1y-30))
         pl12 = fontinfo.render(" cards", True, (0, 0, 0))
         screen.blit(pl12,(pl1x + pl1.get_width() + pl11.get_width(),pl1y))
+        pl1lost = fontinfo.render(str(lostp1), True, (0, 0, 0)) 
+        screen.blit(pl1lost,(pl1x,pl0y-100))
 
         pl2x = width/2-150
         pl2y = 40
@@ -61,6 +68,8 @@ def main():
         screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
         pl22 = fontinfo.render(" cards", True, (0, 0, 0))
         screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
+        pl2lost = fontinfo.render(str(lostp2), True, (0, 0, 0)) 
+        screen.blit(pl2lost,(pl2x,pl2y+100))
         
         pygame.display.flip()
 

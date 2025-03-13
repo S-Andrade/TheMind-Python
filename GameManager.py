@@ -55,9 +55,10 @@ class Player:
         self.id = id
         self.cards = []
         self.state = "WELCOME"
+        self.lost = []
     
     def print_player(self):
-        return str(self.id) + " " + str(self.state) + " " + str(self.cards)
+        return str(self.id) + " " + str(self.state) + " " + str(self.cards)  + " " + str(self.lost) 
 
 def broadcast(clients, message): 
         print(message)         
@@ -71,7 +72,7 @@ def getCards(Level):
         cards.append(random.randint(1, 20))
         cards.append(random.randint(50, 60))
         cards.append(random.randint(90, 99))
-        #random.shuffle(cards)
+        random.shuffle(cards)
 
     elif Level == 2:
         while len(cards) < 5:
@@ -354,6 +355,7 @@ def gameManager(server_socket):
             logger.info("broadcast: GAME")
 
         elif gameState == "GAME" and card_pile != []:
+            
             with mutex:
                 card_played = card_pile[0][0]
                 print(card_pile)
@@ -389,43 +391,45 @@ def gameManager(server_socket):
                     lives -= 1
                 logger.info(f'lives: {lives}')
                 
-                if lives == 0:
+                if id == "0":
                     with mutex:
-                        gameState = "GAMEOVER"
-                    logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
-                    broadcast(clients, "GAMEOVER".encode())
-                    logger.info(f"broadcast: GAMEOVER")
-                else:
-                    
-                    if id == "0":
-                        with mutex:
-                            p0.cards = [x for x in p0.cards if x > topPile]
-                            p1.cards = [x for x in p1.cards if x > topPile]
-                            p2.cards = [x for x in p2.cards if x > topPile]
-                            p0.state = "MISTAKE"
-                            gameState = "MISTAKE"
-                            mistake_time = time.time()
-                    if id == "1":
-                        with mutex:
-                            p0.cards = [x for x in p0.cards if x > topPile]
-                            p1.cards = [x for x in p1.cards if x > topPile]
-                            p2.cards = [x for x in p2.cards if x > topPile]
-                            p1.state = "MISTAKE"
-                            gameState = "MISTAKE"
-                            mistake_time = time.time()
-                    if id == "2":
-                        with mutex:
-                            p0.cards = [x for x in p0.cards if x > topPile]
-                            p1.cards = [x for x in p1.cards if x > topPile]
-                            p2.cards = [x for x in p2.cards if x > topPile]
-                            p2.state = "MISTAKE"
-                            gameState = "MISTAKE"
-                            mistake_time = time.time()
+                        p0.lost = [x for x in p0.cards if x <= topPile]
+                        p0.cards = [x for x in p0.cards if x > topPile]
+                        p1.lost = [x for x in p1.cards if x <= topPile]
+                        p1.cards = [x for x in p1.cards if x > topPile]
+                        p2.lost = [x for x in p2.cards if x <= topPile]
+                        p2.cards = [x for x in p2.cards if x > topPile]
+                        p0.state = "MISTAKE"
+                        gameState = "MISTAKE"
+                        mistake_time = time.time()
+                if id == "1":
+                    with mutex:
+                        p0.lost = [x for x in p0.cards if x <= topPile]
+                        p0.cards = [x for x in p0.cards if x > topPile]
+                        p1.lost = [x for x in p1.cards if x <= topPile]
+                        p1.cards = [x for x in p1.cards if x > topPile]
+                        p2.lost = [x for x in p2.cards if x <= topPile]
+                        p2.cards = [x for x in p2.cards if x > topPile]
+                        p1.state = "MISTAKE"
+                        gameState = "MISTAKE"
+                        mistake_time = time.time()
+                if id == "2":
+                    with mutex:
+                        p0.lost = [x for x in p0.cards if x <= topPile]
+                        p0.cards = [x for x in p0.cards if x > topPile]
+                        p1.lost = [x for x in p1.cards if x <= topPile]
+                        p1.cards = [x for x in p1.cards if x > topPile]
+                        p2.lost = [x for x in p2.cards if x <= topPile]
+                        p2.cards = [x for x in p2.cards if x > topPile]
+                        p2.state = "MISTAKE"
+                        gameState = "MISTAKE"
+                        mistake_time = time.time()
 
-                    logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
-                    sendit = "MISTAKE " + str(card_played)
-                    broadcast(clients, sendit.encode())
-                    logger.info(f"broadcast: {sendit}")
+                logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
+                sendit = "MISTAKE " + str(card_played)
+                broadcast(clients, sendit.encode())
+                logger.info(f"broadcast: {sendit}")
+            
 
         elif gameState == "GAME" and  len(p0.cards) == 0 and len(p1.cards) == 0 and len(p2.cards) == 0 and ultima == False:
             ultima_time = time.time()
@@ -470,10 +474,20 @@ def gameManager(server_socket):
                     p0.state = "GAME"
                     p1.state = "GAME"
                     p2.state = "GAME"
+                    p0.lost = []
+                    p1.lost = []
+                    p2.lost = []
                 print("mistake")
-                logger.info("state: GAME")
-                broadcast(clients, "GAME".encode())
-                logger.info("broadcast: GAME")
+                if lives == 0:
+                    with mutex:
+                        gameState = "GAMEOVER"
+                    logger.info(f"state: {gameState} -- p0.state: {p0.state} -- p0.cards: {p0.cards}  -- p1.state: {p1.state} -- p1.cards: {p1.cards}  -- p2.state: {p2.state} -- p2.cards: {p2.cards}")
+                    broadcast(clients, "GAMEOVER".encode())
+                    logger.info(f"broadcast: GAMEOVER")
+                else:
+                    logger.info("state: GAME")
+                    broadcast(clients, "GAME".encode())
+                    logger.info("broadcast: GAME")
 
         elif gameState == "GAME" and (p0.state == "REFOCUS" or p1.state == "REFOCUS" or p2.state == "REFOCUS"):
             with mutex:
@@ -678,6 +692,8 @@ def gameManager(server_socket):
             screen.blit(pl01,(pl0x + pl0.get_width(),pl0y-30))
             pl02 = fontinfo.render(" cards", True, (0, 0, 0))
             screen.blit(pl02,(pl0x + pl0.get_width() + pl01.get_width(),pl0y))
+            pl0lost = fontinfo.render(str(p0.lost), True, (0, 0, 0)) 
+            screen.blit(pl0lost,(pl0x,pl0y-100))
             
             pl1x = width-350
             pl1y = height-100
@@ -687,6 +703,8 @@ def gameManager(server_socket):
             screen.blit(pl11,(pl1x + pl1.get_width(),pl1y-30))
             pl12 = fontinfo.render(" cards", True, (0, 0, 0))
             screen.blit(pl12,(pl1x + pl1.get_width() + pl11.get_width(),pl1y))
+            pl1lost = fontinfo.render(str(p1.lost), True, (0, 0, 0)) 
+            screen.blit(pl1lost,(pl1x,pl0y-100))
 
             pl2x = width/2-150
             pl2y = 40
@@ -696,7 +714,8 @@ def gameManager(server_socket):
             screen.blit(pl21,(pl2x + pl2.get_width(),pl2y-30))
             pl22 = fontinfo.render(" cards", True, (0, 0, 0))
             screen.blit(pl22,(pl2x + pl2.get_width() + pl21.get_width(),pl2y))
-            
+            pl2lost = fontinfo.render(str(p2.lost), True, (0, 0, 0)) 
+            screen.blit(pl2lost,(pl2x,pl2y+100))
 
             if len(player_played) > 0 and time.time() - player_played[1] < 2:
             
