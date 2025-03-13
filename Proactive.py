@@ -118,7 +118,7 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
+                nextTimeToLook = nextTimeToLook = generate_gaze_time(1206,884,1206)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -133,7 +133,7 @@ def robot():
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
                         player0 += 1
-                    nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
+                    nextTimeToLook = generate_gaze_time(1206,884,1206)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
@@ -170,8 +170,8 @@ def robot():
                     if targetPlayer == "player1":
                         player1 += 1
                 
-                gazeTime = generate_gaze_time(267.95,161.45,961.24)
-                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24) + gazeTime
+                gazeTime = generate_gaze_time(1206,884,1206)
+                nextTimeToLook = generate_gaze_time(1510,1051,1510) + gazeTime
                 timeGaze = time.time()
                 endGaze = False
                 message = f'GazeAtTarget,{targetPlayer}'
@@ -329,7 +329,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.103', 50001))
+    s.connect(('192.168.0.104', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -343,6 +343,7 @@ def main():
 
     threading.Thread(target=robot).start()
 
+    tablet_time = generate_gaze_time(1192,1071,1192)
 
     hi = False
 
@@ -391,12 +392,13 @@ def main():
 
         elif state  == "GAME" and len(cards) > 0:
             
-            if not before_play and time.time() - starttime >= timetoplay - 1:
+            if not before_play and time.time() - starttime >= timetoplay - tablet_time:
                 gazetarget = "tablet"           
                 logger.info(f"gazetarget: {gazetarget}")
                 before_play = True
  
             if time.time() - starttime >= timetoplay:
+                tablet_time = generate_gaze_time(1192,1071,1192)
                 gazetarget = "condition"
                 logger.info(f"gazetarget: {gazetarget}")
 

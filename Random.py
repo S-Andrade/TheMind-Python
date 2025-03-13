@@ -103,7 +103,7 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
+                nextTimeToLook = generate_gaze_time(1229,1134,1229)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -116,7 +116,7 @@ def robot():
                         currentGazeTargetFront = "player1"
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
-                    nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
+                    nextTimeToLook = nextTimeToLook = generate_gaze_time(1229,1134,1229)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
@@ -130,8 +130,8 @@ def robot():
 
             if  currentGazeTargetCondition == "":
                 currentGazeTargetCondition = random.choice(targets)
-                gazeTime = generate_gaze_time(267.95,161.45,961.24)
-                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24) + gazeTime
+                gazeTime = nextTimeToLook = generate_gaze_time(1229,1134,1229)
+                nextTimeToLook = nextTimeToLook = generate_gaze_time(1229,1134,1229) + gazeTime
                 timeGaze = time.time()
                 endGaze = False
                 message = f'GazeAtTarget,{currentGazeTargetCondition}'
@@ -144,8 +144,8 @@ def robot():
 
                 if time.time() - timeGaze >= nextTimeToLook + endGaze:
                     currentGazeTargetCondition = random.choice(targets)
-                    gazeTime = generate_gaze_time(267.95,161.45,961.24)
-                    nextTimeToLook = generate_gaze_time(267.95,161.45,961.24) + gazeTime
+                    gazeTime = nextTimeToLook = generate_gaze_time(1229,1134,1229)
+                    nextTimeToLook = nextTimeToLook = generate_gaze_time(1229,1134,1229) + gazeTime
                     timeGaze = time.time()
                     endGaze = False
                     message = f'GazeAtTarget,{currentGazeTargetCondition}'

@@ -362,7 +362,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.169', 50001))
+    s.connect(('192.168.0.104', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -379,7 +379,7 @@ def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_socket.bind(("192.168.1.169", 50009))
+            server_socket.bind(("192.168.0.103", 50009))
             server_socket.listen()
             print(f'Server listening')
             logger.info("Create Server")

@@ -119,7 +119,7 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
+                nextTimeToLook = 1000/1000
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -134,7 +134,7 @@ def robot():
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
                         player0_count += 1
-                    nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
+                    nextTimeToLook = 1000/1000
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
@@ -200,7 +200,7 @@ def robot():
                     targetPlayer = "mainscreen"
                         
                 
-                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
+                nextTimeToLook = 1000/1000
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{targetPlayer}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -220,18 +220,27 @@ def gaze(conn, addr, id):
     print(id)
     logger = setup_logger(f"Reactive_gaze_{id}")
     print(f'Connected by {addr}')
+
+    lista  = []
     with conn:
         while True:
             msg = conn.recv(1024)
+            print(msg)
             logger.info(f"{id} -- message: {msg}")
             words = re.findall(r'[A-Z][a-z]*', msg.decode())
             target = words[-1]
+            
+            if len(target) > 5:
+                lista = lista[-4:]    
+            lista += [target]   
 
             if id == "0":
-                player0 = target
+                #player0 = target
+                player0 = max(set(lista), key=lista.count)
                 logger.info(f"{id} -- {player0}")
             if id == "1":
-                player1 = target
+                #player1 = target
+                player1 = max(set(lista), key=lista.count)
                 logger.info(f"{id} -- {player1}")
 
 # Function to be executed in the parallel process
