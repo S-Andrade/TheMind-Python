@@ -57,9 +57,9 @@ def generate_gaze_time(mu, sigma, tau):
     return gaze_time / 1000
 
 def robot():
-    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
     
-    logger = setup_logger(f"Proactive_robot")
+    logger = setup_logger(f"Reactive_robot")
     # Cria um socket TCP
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -77,10 +77,12 @@ def robot():
     gazeTime = 0
     timeGaze = time.time()
     endGaze = False
-    player0 = 0
-    player1 = 0
+    player0_count = 0
+    player1_count = 0
+    targetPlayer = ""
     playcard_time = 0
     playcard_start = False
+    pre = ""
 
     while True:
         #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))
@@ -129,10 +131,10 @@ def robot():
                 if time.time() - timeGaze >= nextTimeToLook:
                     if currentGazeTargetFront == "player0":
                         currentGazeTargetFront = "player1"
-                        player1 += 1
+                        player1_count += 1
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
-                        player0 += 1
+                        player0_count += 1
                     nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
@@ -147,64 +149,96 @@ def robot():
 
         elif gazetarget == "condition":
 
-            if  targetPlayer == "":
             
-                if len(cards0) == 0 and len(cards1) > 0:
+            print(str(player0) + "  " + str(player1))
+            #MutualGaze
+            if player0 == "Robot" and (player1 == "Center" or player1 == "Tablet"):
+                targetPlayer = "player0"
+                player0_count += 1
+            
+            elif player1 == "Robot" and (player0 == "Center" or player0 == "Tablet"):
+                targetPlayer = "player1"
+                player1_count += 1
+            
+            elif (player0 == "Shrek" and player1 == "Shrek") or (player0 == "Robot" and player1 == "Robot"):
+
+                if player0 > player1:
                     targetPlayer = "player1"
-                    player1 += 1
-                elif len(cards1) == 0 and len(cards0) > 0:
-                    targetPlayer = "player0"
-                    player0 += 1
-                elif player0 > player1:
-                    targetPlayer = "player1"
-                    player1 += 1
+                    player1_count += 1
                 elif player1 > player0:
                     targetPlayer = "player0"
-                    player0 += 1
+                    player0_count += 1
                 else:
                     targetPlayer = random.choice(players)
 
                     if targetPlayer == "player0":
-                        player0 += 1
-                    
+                        player0_count += 1
+                        
                     if targetPlayer == "player1":
-                        player1 += 1
-                
-                gazeTime = generate_gaze_time(267.95,161.45,961.24)
-                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24) + gazeTime
-                timeGaze = time.time()
-                endGaze = False
+                        player1_count += 1    
+
+            #JointAttention
+            elif player0 == "Shrek" and (player1 == "Center" or player1 == "Tablet"):
+                targetPlayer = "player1"
+                player1_count += 1
+            
+            elif player1 == "Shrek" and (player0 == "Center" or player0 == "Tablet"):
+                targetPlayer = "player0"
+                player0_count += 1
+
+            elif player0 == "Robot" and player1 == "Shrek":
+                targetPlayer = "player0"
+                player0_count += 1
+            
+            elif player1 == "Robot" and player0 == "Shrek":
+                targetPlayer = "player1"
+                player1_count += 1
+            
+            elif player0 == "Center" and player1 == "Center":
+                targetPlayer = "mainscreen"
+            
+            else:
+                targetPlayer = "mainscreen"
+                    
+            
+            if pre != targetPlayer:
                 message = f'GazeAtTarget,{targetPlayer}'
                 client_socket.sendall(message.encode('utf-8'))
                 #print("r>" + message)
-                logger.info(f"targetPlayer: {targetPlayer} -- gazeTime: {gazeTime} -- nextTimeToLook: {nextTimeToLook}")
+                logger.info(f"targetPlayer: {targetPlayer} -- nextTimeToLook: {nextTimeToLook}")
+                pre = targetPlayer
 
-            
-            if  targetPlayer != "":
-
-                if time.time() - timeGaze >= nextTimeToLook + gazeTime:
-                    targetPlayer = ""
-                    #print(message)
-                    logger.info(f"targetPlayer: {targetPlayer}")
+        
+           
                 
-                elif time.time() - timeGaze >= gazeTime and not endGaze:
-                    message = f'GazeAtTarget,mainscreen'
-                    client_socket.sendall(message.encode('utf-8'))
-                    #print("mm>"+message)
-                    endGaze = True
+def gaze(conn, addr, id):
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget
+    print(id)
+    logger = setup_logger(f"Reactive_gaze_{id}")
+    print(f'Connected by {addr}')
+    with conn:
+        while True:
+            msg = conn.recv(1024)
+            logger.info(f"{id} -- message: {msg}")
+            words = re.findall(r'[A-Z][a-z]*', msg.decode())
+            target = words[-1]
 
-                    logger.info(f"targetPlayer: mainscreen")
+            if id == "0":
+                player0 = target
+                logger.info(f"{id} -- {player0}")
+            if id == "1":
+                player1 = target
+                logger.info(f"{id} -- {player1}")
 
 # Function to be executed in the parallel process
 def worker(s, id):
-    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
   
-    logger = setup_logger("worker_Proactive")
+    logger = setup_logger("worker_Reactive")
     while True:
         msg = s.recv(1024)
         msg = msg.decode()
         #print(">"+msg)
-        print(cards)
         
         if "NEXTLEVEL" in msg:
             list_cards = eval(msg[9:])
@@ -308,8 +342,8 @@ def worker(s, id):
                 logger.info(f"state: {state}")
             
 def main():
-    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, targetPlayer, playcard
-    logger = setup_logger("Proactive")
+    global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget, last, cards0, cards1, playcard
+    logger = setup_logger("Reactive")
     cards = [] 
     cards0 = []
     cards1 = []
@@ -325,11 +359,10 @@ def main():
     animation = "" 
     gazetarget = ""
     last = False
-    targetPlayer = ""
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.103', 50001))
+    s.connect(('192.168.1.169', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -343,6 +376,23 @@ def main():
 
     threading.Thread(target=robot).start()
 
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
+        try:
+            server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            server_socket.bind(("192.168.1.169", 50009))
+            server_socket.listen()
+            print(f'Server listening')
+            logger.info("Create Server")
+        except Exception as e:
+            raise
+
+        for i in range(2):
+            conn, addr = server_socket.accept()
+            first = conn.recv(1024)
+            first = first.decode()
+            player_id = ''.join(x for x in first if x.isdigit())
+            threading.Thread(target=gaze, args=(conn, addr, player_id, )).start()
+            logger.info(f"Start gaze {player_id}")
 
     hi = False
 

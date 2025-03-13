@@ -53,6 +53,7 @@ def generate_gaze_time(mu, sigma, tau):
     # Sum the two values to get the ex-Gaussian sample
     gaze_time = gaussian_sample + exponential_sample
     
+    print(gaze_time/1000)
     return gaze_time / 1000
 
 def robot():
@@ -118,7 +119,7 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = generate_gaze_time(200.48, 142.57, 930.47)
+                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -133,13 +134,12 @@ def robot():
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
                         player0_count += 1
-                    nextTimeToLook = generate_gaze_time(200.48, 142.57, 930.47)
+                    nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
                     logger.info(f"currentGazeTargetFront: {currentGazeTargetFront} -- nextTimeToLook: {nextTimeToLook}")
                     #print(message)
-
 
         elif gazetarget == "tablet":
             message = f'GazeAtTarget,tablet'
@@ -200,7 +200,7 @@ def robot():
                     targetPlayer = "mainscreen"
                         
                 
-                nextTimeToLook = generate_gaze_time(200.48, 142.57, 930.47)
+                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{targetPlayer}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -366,7 +366,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.169', 50001))
+    s.connect(('192.168.0.104', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -383,7 +383,7 @@ def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_socket.bind(("192.168.1.169", 50009))
+            server_socket.bind(("192.168.0.103", 50009))
             server_socket.listen()
             print(f'Server listening')
             logger.info("Create Server")

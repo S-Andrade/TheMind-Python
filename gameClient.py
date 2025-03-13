@@ -191,8 +191,6 @@ def main():
             screen.fill((231,84,128)) 
             text = font.render("LEVEL "+ str(level+1), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
             pygame.display.flip()
                 
             pygame.display.flip()
@@ -200,9 +198,6 @@ def main():
             screen.fill((255,182,193)) 
             text = font.render("LEVEL "+ str(level+1), True, (0, 0, 0))
             screen.blit(text, text.get_rect(center = screen.get_rect().center))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
-                
             pygame.display.flip()
         
         elif state == "NEXTLEVEL":
@@ -215,8 +210,6 @@ def main():
             if x < 0:
                 x = 0
             screen.blit(cards_text, (x,screen.get_rect().centery + 200))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
             pygame.display.flip()
         
         elif state == "WAITING_NEXTLEVEL":
@@ -229,9 +222,6 @@ def main():
             if x < 0:
                 x = 0
             screen.blit(cards_text, (x,screen.get_rect().centery + 200))
-
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
             pygame.display.flip()
 
         elif state  == "GAME" and len(cards) > 0:
@@ -253,10 +243,6 @@ def main():
 
             text = fontbuttons.render('play' , True , (0,0,0) )
             screen.blit(text , (width/2-70,height/2-50)) 
-            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
-            screen.blit(lev, (width-250,80))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
             
             pygame.display.flip()
 
@@ -268,10 +254,6 @@ def main():
             if x < 0:
                 x = 0
             screen.blit(cards_text, (x ,height/1.5))
-            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
-            screen.blit(lev, (width-250,80))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
             pygame.display.flip()
         
         elif state  == "MISTAKE":
@@ -282,10 +264,7 @@ def main():
             if x < 0:
                 x = 0
             screen.blit(cards_text, (x ,height/1.5))
-            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
-            screen.blit(lev, (width-250,80))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
+            
             pygame.display.flip()
         
         elif state  == "WAITING_MISTAKE":
@@ -296,10 +275,7 @@ def main():
             if x < 0:
                 x = 0
             screen.blit(cards_text, (x ,height/1.5))
-            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
-            screen.blit(lev, (width-250,80))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
+            
             pygame.display.flip()
 
         elif state  == "REFOCUS":
@@ -310,10 +286,7 @@ def main():
             if x < 0:
                 x = 0
             screen.blit(cards_text, (x ,height/1.5))
-            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
-            screen.blit(lev, (width-250,80))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
+            
             pygame.display.flip()
 
         elif state  == "WAITING_REFOCUS":
@@ -324,10 +297,7 @@ def main():
             if x < 0:
                 x = 0
             screen.blit(cards_text, (x ,height/1.5))
-            lev = fontinfo.render("LEVEL: "+ str(level), True, (0, 0, 0))
-            screen.blit(lev, (width-250,80))
-            liv = fontinfo.render("LIVES: "+ str(lives), True, (0, 0, 0))
-            screen.blit(liv, (width-250,10))
+            
             pygame.display.flip()
 
 

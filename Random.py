@@ -3,6 +3,7 @@ import time
 import socket
 import sys
 import random
+import re
 import numpy as np
 import os
 import logging
@@ -52,8 +53,8 @@ def generate_gaze_time(mu, sigma, tau):
     # Sum the two values to get the ex-Gaussian sample
     gaze_time = gaussian_sample + exponential_sample
     
-    print(gaze_time)
-    return gaze_time/1000
+    print(gaze_time/1000)
+    return gaze_time / 1000
 
 def robot():
     global cards, state, level, lastplay, mistake, starttime, timetoplay, player0, player1, speak, animation, gazetarget
@@ -102,7 +103,7 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = generate_gaze_time(313.22, 164.98,801.74)
+                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -115,7 +116,7 @@ def robot():
                         currentGazeTargetFront = "player1"
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
-                    nextTimeToLook = generate_gaze_time(313.22, 164.98,801.74)
+                    nextTimeToLook = generate_gaze_time(267.95,161.45,961.24)
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
@@ -129,8 +130,8 @@ def robot():
 
             if  currentGazeTargetCondition == "":
                 currentGazeTargetCondition = random.choice(targets)
-                gazeTime = generate_gaze_time(313.22, 164.98,801.74)
-                nextTimeToLook = generate_gaze_time(146.18,120.72,993.70) + gazeTime
+                gazeTime = generate_gaze_time(267.95,161.45,961.24)
+                nextTimeToLook = generate_gaze_time(267.95,161.45,961.24) + gazeTime
                 timeGaze = time.time()
                 endGaze = False
                 message = f'GazeAtTarget,{currentGazeTargetCondition}'
@@ -143,8 +144,8 @@ def robot():
 
                 if time.time() - timeGaze >= nextTimeToLook + endGaze:
                     currentGazeTargetCondition = random.choice(targets)
-                    gazeTime = generate_gaze_time(313.22, 164.98,801.74)
-                    nextTimeToLook = generate_gaze_time(146.18,120.72,993.70) + gazeTime
+                    gazeTime = generate_gaze_time(267.95,161.45,961.24)
+                    nextTimeToLook = generate_gaze_time(267.95,161.45,961.24) + gazeTime
                     timeGaze = time.time()
                     endGaze = False
                     message = f'GazeAtTarget,{currentGazeTargetCondition}'
@@ -298,7 +299,7 @@ def main():
 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.169', 50001))
+    s.connect(('192.168.0.104', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
