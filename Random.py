@@ -70,7 +70,7 @@ def robot():
 
     players = ["player0", "player1"]
 
-    targets = ["player0", "player1", "tablet"]
+    targets = ["player0", "player1", "tablet", "random"]
 
     currentGazeTargetFront = ""
     currentGazeTargetCondition = ""

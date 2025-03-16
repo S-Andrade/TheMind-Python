@@ -119,7 +119,7 @@ def robot():
 
             if currentGazeTargetFront == "":
                 currentGazeTargetFront = random.choice(players)
-                nextTimeToLook = 1000/1000
+                nextTimeToLook = 700/1000
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{currentGazeTargetFront}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -134,7 +134,7 @@ def robot():
                     elif currentGazeTargetFront == "player1":
                         currentGazeTargetFront = "player0"
                         player0_count += 1
-                    nextTimeToLook = 1000/1000
+                    nextTimeToLook = 700/1000
                     timeGaze = time.time()
                     message = f'GazeAtTarget,{currentGazeTargetFront}'
                     client_socket.sendall(message.encode('utf-8'))
@@ -200,7 +200,7 @@ def robot():
                     targetPlayer = "mainscreen"
                         
                 
-                nextTimeToLook = 1000/1000
+                nextTimeToLook = 700/1000
                 timeGaze = time.time()
                 message = f'GazeAtTarget,{targetPlayer}'
                 client_socket.sendall(message.encode('utf-8'))
@@ -375,7 +375,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.104', 50001))
+    s.connect(('192.168.0.102', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -389,10 +389,12 @@ def main():
 
     threading.Thread(target=robot).start()
 
+    tablet_time = generate_gaze_time(1192,1071,1192)
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         try:
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            server_socket.bind(("192.168.0.103", 50009))
+            server_socket.bind(("192.168.0.100", 50009))
             server_socket.listen()
             print(f'Server listening')
             logger.info("Create Server")
@@ -417,7 +419,7 @@ def main():
         if state == "WELCOME":
             #print("welcome")
             #     
-            if not hi:
+            if not hi and player0 != "" and player1 != "":
                 speak = "Hello! I'm emis, and I will be a member of the time!"
                 hi = True
 
@@ -454,12 +456,13 @@ def main():
 
         elif state  == "GAME" and len(cards) > 0:
             
-            if not before_play and time.time() - starttime >= timetoplay - 1:
+            if not before_play and time.time() - starttime >= timetoplay - tablet_time:
                 gazetarget = "tablet"           
                 logger.info(f"gazetarget: {gazetarget}")
                 before_play = True
  
             if time.time() - starttime >= timetoplay:
+                tablet_time = generate_gaze_time(1192,1071,1192)
                 gazetarget = "condition"
                 logger.info(f"gazetarget: {gazetarget}")
 
