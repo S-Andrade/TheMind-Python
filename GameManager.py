@@ -8,7 +8,7 @@ import time
 import logging
 import os
 import sys
-from playsound import playsound
+
 import threading
 import os
 
@@ -19,7 +19,7 @@ mutex = threading.Lock()
 
 def setup_logger(process_name):
 
-    directory = "migas"
+    directory = "2"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -355,18 +355,20 @@ def gameManager(server_socket):
             logger.info("broadcast: GAME")
 
         elif gameState == "GAME" and card_pile != []:
-            
-            with mutex:
-                card_played = card_pile[0][0]
-                print(card_pile)
-                print(str(p0.cards) + " " + str(p1.cards) + " " + str(p2.cards))
-                topPile = card_played
-                id = card_pile[0][1]
-                player_played = [card_pile[0][1] , card_pile[0][2]] 
+            if card_pile[0][0] > topPile:
+                with mutex:
+                    card_played = card_pile[0][0]
+                    print(card_pile)
+                    print(str(p0.cards) + " " + str(p1.cards) + " " + str(p2.cards))
+                    topPile = card_played
+                    id = card_pile[0][1]
+                    player_played = [card_pile[0][1] , card_pile[0][2]] 
+                    card_pile.pop(0)
+                logger.info(f"PLAY -- palyer: {id} -- card: {card_played}")
+                #playsound("card-sound.mp3")
+                sound.play()
+            else:
                 card_pile.pop(0)
-            logger.info(f"PLAY -- palyer: {id} -- card: {card_played}")
-            #playsound("card-sound.mp3")
-            sound.play()
 
 
             if (len(p0.cards) == 0 or card_played <= p0.cards[0]) and (len(p1.cards) == 0 or card_played <= p1.cards[0]) and (len(p2.cards) == 0 or card_played <= p2.cards[0]):

@@ -10,7 +10,7 @@ import logging
 
 def setup_logger(process_name):
 
-    directory = "migas"
+    directory = "2"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -329,7 +329,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.104', 50001))
+    s.connect(('192.168.0.105', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
