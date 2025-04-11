@@ -13,7 +13,7 @@ import threading
 
 def setup_logger(process_name):
 
-    directory = "migas"
+    directory = "2"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -84,14 +84,14 @@ def worker(s, id):
             logger.info(f"WELCOME")
             logger.info(f"state: {state}")
 
-        elif len(cards) > 0:
-            if "MISTAKE" in msg:
+        if "MISTAKE" in msg:
                 state = "MISTAKE"
                 mistake = int(msg[7:])
                 cards = [x for x in cards if x > mistake]
                 lives -= 1
                 logger.info(f"state: {state} -- cards: {cards} -- mistake: {mistake} -- lives:{lives}")
-            
+
+        elif len(cards) > 0:
             if "REFOCUS" in msg:
                 state = "REFOCUS"
                 logger.info(f"REFOCUS")
@@ -100,7 +100,7 @@ def worker(s, id):
 def main():
     global cards, state, level, lastplay, mistake, lives
 
-    id = sys.argv[1]
+    id = "0"
     logger = setup_logger(f"gameClient_{id}")
 
     cards = []
@@ -116,7 +116,7 @@ def main():
     
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.1.169', 50001))
+    s.connect(('192.168.0.105', 50001))
     msgid = "Player " + id
     s.send(msgid.encode())
 
