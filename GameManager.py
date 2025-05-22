@@ -19,7 +19,7 @@ mutex = threading.Lock()
 
 def setup_logger(process_name):
 
-    directory = "2"
+    directory = "40"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -929,7 +929,7 @@ def main():
         player_played = []
         card_pile = []
 
-    host = '192.168.1.169'
+    host = '192.168.0.101'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:

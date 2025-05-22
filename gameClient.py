@@ -13,7 +13,7 @@ import threading
 
 def setup_logger(process_name):
 
-    directory = "2"
+    directory = "40"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -100,7 +100,7 @@ def worker(s, id):
 def main():
     global cards, state, level, lastplay, mistake, lives
 
-    id = "0"
+    id = sys.argv[1]
     logger = setup_logger(f"gameClient_{id}")
 
     cards = []
@@ -116,7 +116,7 @@ def main():
     
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.105', 50001))
+    s.connect(('192.168.0.101', 50001))
     msgid = "Player " + id
     s.send(msgid.encode())
 

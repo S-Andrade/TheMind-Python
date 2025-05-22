@@ -10,7 +10,7 @@ import logging
 
 def setup_logger(process_name):
 
-    directory = "8"
+    directory = "40"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -53,7 +53,7 @@ def generate_gaze_time(mu, sigma, tau):
     # Sum the two values to get the ex-Gaussian sample
     gaze_time = gaussian_sample + exponential_sample
     
-    print(gaze_time/1000)
+    #print(gaze_time/1000)
     return gaze_time / 1000
 
 def robot():
@@ -83,7 +83,7 @@ def robot():
     playcard_start = False
 
     while True:
-        #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))
+        #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))                           
 
         if animation != "":
             message = f'PlayAnimation,player2,{animation}'
@@ -148,28 +148,97 @@ def robot():
         elif gazetarget == "condition":
 
             if  targetPlayer == "":
-            
-                if len(cards0) == 0 and len(cards1) > 0:
-                    targetPlayer = "player1"
-                    player1 += 1
-                elif len(cards1) == 0 and len(cards0) > 0:
-                    targetPlayer = "player0"
-                    player0 += 1
-                elif player0 > player1:
-                    targetPlayer = "player1"
-                    player1 += 1
-                elif player1 > player0:
-                    targetPlayer = "player0"
-                    player0 += 1
-                else:
-                    targetPlayer = random.choice(players)
+    
+                if len(cards) > 0:
+                    if (len(cards0) > 0 and len(cards1) > 0)  or (len(cards1) == 0 and len(cards0) == 0):
+                        if (cards[0] < cards0[0] and cards[0] < cards1[0]) or (len(cards1) == 0 and len(cards0) == 0):
+                            if player0 > player1:
+                                targetPlayer = "player1"
+                                player1 += 1
+                            elif player1 > player0:
+                                targetPlayer = "player0"
+                                player0 += 1
+                            else:
+                                targetPlayer = random.choice(players)
 
-                    if targetPlayer == "player0":
-                        player0 += 1
+                                if targetPlayer == "player0":
+                                    player0 += 1
+                                
+                                if targetPlayer == "player1":
+                                    player1 += 1
+                        if cards0[0] < cards[0] and cards0[0] < cards1[0]:
+                            x = random.randint(0,100)
+                            print(x)
+                            if x < 70:
+                                targetPlayer = "player0"
+                                player0 += 1
+                            else:
+                                targetPlayer = "player1"
+                                player1 += 1
+                        if cards1[0] < cards[0] and cards1[0] < cards0[0]:
+                            x = random.randint(0,100)
+                            print(x)
+                            if x < 70:
+                                targetPlayer = "player1"
+                                player1 += 1
+                            else:
+                                targetPlayer = "player0"
+                                player0 += 1
                     
-                    if targetPlayer == "player1":
+                    if len(cards0) > 0 and len(cards1) == 0:
+                        targetPlayer = "player0"
+                        player0 += 1
+
+                    if len(cards1) > 0 and len(cards0) == 0:
+                        targetPlayer = "player1"
                         player1 += 1
-                
+
+                if len(cards) == 0:
+                    if len(cards0) > 0 and len(cards1) > 0:
+                        if cards0[0] < cards1[0]:
+                            x = random.randint(0,100)
+                            print(x)
+                            if x < 70:
+                                targetPlayer = "player0"
+                                player0 += 1
+                            else:
+                                targetPlayer = "player1"
+                                player1 += 1
+                        
+                        if cards1[0] < cards0[0]:
+                            x = random.randint(0,100)
+                            print(x)
+                            if x < 70:
+                                targetPlayer = "player1"
+                                player1 += 1
+                            else:
+                                targetPlayer = "player0"
+                                player0 += 1
+
+                    if len(cards0) > 0 and len(cards1) == 0:
+                        targetPlayer = "player0"
+                        player0 += 1
+
+                    if len(cards1) > 0 and len(cards0) == 0:
+                        targetPlayer = "player1"
+                        player1 += 1
+                        
+                    if len(cards0) == 0 and len(cards1) == 0:
+                        if player0 > player1:
+                            targetPlayer = "player1"
+                            player1 += 1
+                        elif player1 > player0:
+                            targetPlayer = "player0"
+                            player0 += 1
+                        else:
+                            targetPlayer = random.choice(players)
+
+                            if targetPlayer == "player0":
+                                player0 += 1
+                            
+                            if targetPlayer == "player1":
+                                player1 += 1
+
                 gazeTime = generate_gaze_time(1206,884,1206)
                 nextTimeToLook = generate_gaze_time(1510,1051,1510) + gazeTime
                 timeGaze = time.time()
@@ -207,7 +276,7 @@ def worker(s, id):
         msg = msg.decode()
         logger.info(f"msg -- {msg}")
         #print(">"+msg)
-        print(cards)
+        #print(cards)
         
         if "NEXTLEVEL" in msg:
             list_cards = eval(msg[9:])
@@ -259,7 +328,7 @@ def worker(s, id):
                             cards1 =  [ i for i in cards1 if i!= card ]    
 
                         playcard = "player" + player
-                        print("player" + player)
+                        #print("player" + player)
                         if timetoplay == 1:
                             speak = "My turn!"
                             gazetarget = "front"

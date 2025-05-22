@@ -5,7 +5,7 @@ import sys
 import random
 
 sGaze = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-sGaze.connect(('192.168.1.169', 50009))
+sGaze.connect(('192.168.0.105', 50009))
 
 gazes = ["player0", "player1", "mainscreen", "tablet"]
 gazes = ["Shrek", "Center", "Tablet"]

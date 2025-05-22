@@ -10,7 +10,7 @@ import logging
 
 def setup_logger(process_name):
 
-    directory = "0"
+    directory = "6"
 
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -235,7 +235,7 @@ def worker(s, id):
                     #print(timetoplay)
                     logger.info(f"timetoplay: {timetoplay}")
                     if player != "2" and timetoplay == 1:
-                        speak = "Agora sou eu!"
+                        speak = "My turn!"
                         gazetarget = "front"
                         logger.info(f"gazetarget: {gazetarget} -- speak: {speak}")
 
@@ -299,7 +299,7 @@ def main():
 
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.105', 50001))
+    s.connect(('192.168.0.104', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -319,13 +319,14 @@ def main():
 
     
     while True:
-        #print(state)
+        #print(str(cards0) + " " + str(cards1) + " " + str(cards))
         if state == "WELCOME":
-            ##print("welcome")
+            #print("welcome")
             #     
             if not hi:
                 speak = "Hello! I'm emis, and I will be a member of the time!"
                 hi = True
+
                 gazetarget = "front"
                 logger.info(f"speak: {speak} -- gazetarget: {gazetarget}")
 
@@ -387,6 +388,7 @@ def main():
             falas = ["oh no!", "We lost a life!"]
             speak = random.choice(falas)
             gazetarget = "front"
+
             s.send("MISTAKE".encode())
             state = "WAITING_MISTAKE"
             logger.info(f"state: {state} -- gazetarget: {gazetarget} -- speak: {speak} -- send: MISTAKE")
@@ -397,6 +399,7 @@ def main():
         
         elif state == "REFOCUS":
             gazetarget = "condition"
+
             s.send("REFOCUS".encode())
             state = "WAITING_REFOCUS"
             logger.info(f"state: {state} -- gazetarget: {gazetarget} -- send: REFOCUS")
