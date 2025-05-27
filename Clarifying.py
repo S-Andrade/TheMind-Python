@@ -170,8 +170,11 @@ def robot():
                     if targetPlayer == "player1":
                         player1 += 1
                 
-                if len(cards) > 0 and (len(cards0) == 0  or cards[0] > cards0[0]) and  (len(cards1) == 0  or cards[0] > cards1[0]):
-                    print("hello")
+                print(str(cards)+" "+str(cards0)+" "+str(cards1))
+                if len(cards) > 0 and (
+                    (len(cards0) > 0 and len(cards1) > 0 and (cards[0] > cards0[0] or cards[0] > cards1[0]) ) or
+                    (len(cards0) == 0 and len(cards1) > 0 and cards[0] > cards1[0]) or
+                    (len(cards1) == 0 and len(cards0) > 0 and cards[0] > cards0[0]) ):
                     x = random.randint(0,100)
                     print(x)
                     if  x < 70:
@@ -214,7 +217,7 @@ def worker(s, id):
         msg = msg.decode()
         logger.info(f"msg -- {msg}")
         #print(">"+msg)
-        print(cards)
+        #print(cards)
         
         if "NEXTLEVEL" in msg:
             list_cards = eval(msg[9:])
@@ -260,13 +263,13 @@ def worker(s, id):
                     timetoplay = cards[0] - card
                     starttime = time.time()
                     if player != "2":
-                        if player == 0:
+                        if player == "0":
                             cards0 =  [ i for i in cards0 if i!= card ] 
-                        if player == 1:
+                        if player == "1":
                             cards1 =  [ i for i in cards1 if i!= card ]    
 
                         playcard = "player" + player
-                        print("player" + player)
+                        #print("player" + player)
                         if timetoplay == 1:
                             speak = "My turn!"
                             gazetarget = "front"
@@ -339,7 +342,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.101', 50001))
+    s.connect(('127.0.0.1', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
@@ -373,7 +376,7 @@ def main():
                 logger.info(f"speak: {speak} -- gazetarget: {gazetarget}")
 
             
-            print("hello")
+            #print("hello")
             s.send("WELCOME".encode())
             state = "WAITING_WELCOME"
             logger.info(f"send: WELCOME -- state: {state}")

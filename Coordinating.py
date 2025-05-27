@@ -149,6 +149,7 @@ def robot():
 
             if  targetPlayer == "":
     
+                print(str(cards)+" "+str(cards0)+" "+str(cards1))
                 if len(cards) > 0:
                     if (len(cards0) > 0 and len(cards1) > 0)  or (len(cards1) == 0 and len(cards0) == 0):
                         if (cards[0] < cards0[0] and cards[0] < cards1[0]) or (len(cards1) == 0 and len(cards0) == 0):
@@ -318,14 +319,16 @@ def worker(s, id):
             player = msgclean[0]
             card = int(msgclean[1])
             logger.info(f"player: {player} - card: {card}")
+            if player == "0":
+                cards0 =  [ i for i in cards0 if i!= card ] 
+            if player == "1":
+                cards1 =  [ i for i in cards1 if i!= card ] 
+
             if len(cards) > 0:
                     timetoplay = cards[0] - card
                     starttime = time.time()
                     if player != "2":
-                        if player == 0:
-                            cards0 =  [ i for i in cards0 if i!= card ] 
-                        if player == 1:
-                            cards1 =  [ i for i in cards1 if i!= card ]    
+                           
 
                         playcard = "player" + player
                         #print("player" + player)
@@ -401,7 +404,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.101', 50001))
+    s.connect(('127.0.0.1', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
