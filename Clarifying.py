@@ -85,13 +85,6 @@ def robot():
     while True:
         #print(str(shared_dict["player0"]) + "  " + str(shared_dict["player1"]))
 
-        if animation != "":
-            message = f'PlayAnimation,player2,{animation}'
-            client_socket.sendall(message.encode('utf-8'))
-            #print(message)
-            animation = ""
-            logger.info(f"-animation: {animation}")
-        
         if speak != "":
             message = f'Speak,player2,{speak}'
             client_socket.sendall(message.encode('utf-8'))
@@ -204,6 +197,49 @@ def robot():
                     endGaze = True
 
                     logger.info(f"targetPlayer: mainscreen")
+
+        if animation != "":
+            if animation == "disgust3":
+                p = ""
+                while p == "":
+                    p = targetPlayer
+
+                time.sleep(0.7)
+
+                message = f'SetPosture,{p},fear'
+                client_socket.sendall(message.encode('utf-8'))
+
+                time.sleep(0.3)
+
+                message = f'GazeAtTarget,R{p}'
+                client_socket.sendall(message.encode('utf-8'))
+
+                time.sleep(0.3)
+
+                message = f'GazeAtTarget,L{p}'
+                client_socket.sendall(message.encode('utf-8'))
+
+                time.sleep(0.3)
+
+                message = f'GazeAtTarget,R{p}'
+                client_socket.sendall(message.encode('utf-8'))
+
+                time.sleep(0.3)
+
+                message = f'GazeAtTarget,L{p}'
+                client_socket.sendall(message.encode('utf-8'))
+
+                time.sleep(0.3)
+
+                message = f'SetPosture,{p},neutral'
+                client_socket.sendall(message.encode('utf-8'))
+
+            else:
+                message = f'PlayAnimation,player2,{animation}'
+                client_socket.sendall(message.encode('utf-8'))
+            
+            animation = ""
+            logger.info(f"-animation: {animation}")
 
 # Function to be executed in the parallel process
 def worker(s, id):
@@ -342,7 +378,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('127.0.0.1', 50001))
+    s.connect(('192.168.0.101', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 

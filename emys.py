@@ -1,24 +1,50 @@
-import xmlrpc.client
 import time
-import numpy as np
-import ctypes
+import socket
 
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-class TimeoutTransport(xmlrpc.client.Transport):
-    timeout = 500.0
-    def set_timeout(self, timeout):
-        self.timeout = timeout
+# Conecta ao servidor (mesmo IP e porta usados no C#)
+server_address = ('127.0.0.1', 8080)
+client_socket.connect(server_address)
 
-# Assuming thalamusAddress and clientPort are defined somewhere else in your code
-thalamusAddress = "localhost"  # Example address
-clientPort = 2002         # Example 
-t = TimeoutTransport()
-t.set_timeout(1000)
+message = f'GazeAtTarget,player0'
+client_socket.sendall(message.encode('utf-8'))
 
-eventPublisher = xmlrpc.client.ServerProxy('http://{0}:{1}'.format(thalamusAddress, clientPort), transport=t, verbose=False)
+time.sleep(5)
 
-s = eventPublisher.Connect("SERA","python", 2011, 2010, 1)
-print(s)
-e = eventPublisher.PongSync("python", 1)
-print(e)
-eventPublisher.Disconnect("python")
+message = f'GazeAtTarget,player1'
+client_socket.sendall(message.encode('utf-8'))
+
+time.sleep(5)
+
+message = f'SetPosture,player1,fear'
+client_socket.sendall(message.encode('utf-8'))
+
+time.sleep(0.3)
+
+message = f'GazeAtTarget,Rplayer1'
+client_socket.sendall(message.encode('utf-8'))
+
+time.sleep(0.3)
+
+message = f'GazeAtTarget,Lplayer1'
+client_socket.sendall(message.encode('utf-8'))
+
+time.sleep(0.3)
+
+message = f'GazeAtTarget,Rplayer1'
+client_socket.sendall(message.encode('utf-8'))
+
+time.sleep(0.3)
+
+message = f'GazeAtTarget,Lplayer1'
+client_socket.sendall(message.encode('utf-8'))
+
+time.sleep(0.3)
+
+message = f'SetPosture,player1,neutral'
+client_socket.sendall(message.encode('utf-8'))
+
+time.sleep(5)
+
+client_socket.close()

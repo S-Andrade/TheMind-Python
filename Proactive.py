@@ -332,7 +332,7 @@ def main():
     playcard = ""
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         
-    s.connect(('192.168.0.101', 50001))
+    s.connect(('192.168.0.104', 50001))
     msgid = "Player 2" 
     s.send(msgid.encode())
 
