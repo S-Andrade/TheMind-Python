@@ -929,7 +929,7 @@ def main():
         player_played = []
         card_pile = []
 
-    host = '192.168.0.101'
+    host = '127.0.0.1'
     port = 50001
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
